@@ -1,0 +1,9 @@
+* text=auto eol=lf
+*.md text
+*.json text
+*.svg text
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif -filter binary
+*.mp4 -filter binary

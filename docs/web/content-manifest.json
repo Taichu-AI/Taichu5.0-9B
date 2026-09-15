@@ -1,0 +1,812 @@
+{
+  "en": {
+    "source": "README.md",
+    "source_sha256": "09a1f11a866bea06b6364a80a5336e9bccb4656015abf96a3c132843585c57be",
+    "benchmark_tables": [
+      [
+        [
+          "Area",
+          "Benchmark",
+          "ZDTaichu5.0-9B",
+          "Qwen3.5-9B",
+          "STEP3-VL-10B",
+          "gemma4-8B-E4B",
+          "Gemini 3 Pro",
+          "Grok 4",
+          "GPT-5.2"
+        ],
+        [
+          "Basic spatial perception",
+          "CV-Bench",
+          "86.82",
+          "87.19",
+          "83.49",
+          "68.10",
+          "90.07",
+          "—",
+          "86.84"
+        ],
+        [
+          "Basic spatial perception",
+          "3DSRBench",
+          "60.96",
+          "56.78",
+          "55.01",
+          "53.62",
+          "68.92",
+          "54.93",
+          "60.20"
+        ],
+        [
+          "Basic spatial perception",
+          "SparBench",
+          "51.82",
+          "50.79",
+          "45.68",
+          "28.50",
+          "48.74",
+          "44.76",
+          "55.07"
+        ],
+        [
+          "Complex spatial reasoning",
+          "ViewSpatial",
+          "62.50",
+          "48.20",
+          "46.14",
+          "41.68",
+          "50.36",
+          "43.23",
+          "47.30"
+        ],
+        [
+          "Complex spatial reasoning",
+          "MMSI-Bench",
+          "47.20",
+          "38.70",
+          "32.18",
+          "29.20",
+          "45.20",
+          "37.80",
+          "41.30"
+        ],
+        [
+          "Complex spatial reasoning",
+          "MindCube-tiny",
+          "78.27",
+          "57.60",
+          "62.81",
+          "48.85",
+          "70.87",
+          "63.56",
+          "60.38"
+        ],
+        [
+          "Embodied interaction",
+          "ERQA",
+          "48.00",
+          "41.50",
+          "47.75",
+          "30.20",
+          "66.00",
+          "—",
+          "59.80"
+        ],
+        [
+          "Embodied interaction",
+          "RoboSpatial",
+          "56.00",
+          "54.10",
+          "52.86",
+          "49.43",
+          "57.40",
+          "—",
+          "43.78"
+        ],
+        [
+          "Embodied interaction",
+          "VSI-Bench",
+          "59.69",
+          "55.68",
+          "42.42",
+          "32.91",
+          "52.51",
+          "47.92",
+          "54.49"
+        ]
+      ],
+      [
+        [
+          "Area",
+          "Benchmark",
+          "ZDTaichu5.0-9B",
+          "Qwen3.5-9B",
+          "STEP3-VL-10B",
+          "gemma4-8B-E4B",
+          "Gemini 3 Pro",
+          "Grok 4",
+          "GPT-5.2"
+        ],
+        [
+          "Multi modal Reasoning",
+          "MathVista Mini",
+          "84.50",
+          "85.70",
+          "83.97",
+          "65.30",
+          "87.90",
+          "72.50",
+          "83.10"
+        ],
+        [
+          "Multi modal Reasoning",
+          "WeMath",
+          "75.90",
+          "75.20",
+          "73.03",
+          "50.19",
+          "86.90",
+          "—",
+          "79.00"
+        ],
+        [
+          "Multi modal Reasoning",
+          "MathVerse Mini Vision Only",
+          "76.40",
+          "84.14",
+          "74.60",
+          "53.55",
+          "—",
+          "—",
+          "—"
+        ],
+        [
+          "General VQA",
+          "MMStar",
+          "76.80",
+          "79.70",
+          "77.48",
+          "62.00",
+          "83.10",
+          "69.60",
+          "77.10"
+        ],
+        [
+          "General VQA",
+          "AI2D",
+          "91.48",
+          "90.20",
+          "89.35",
+          "79.15",
+          "94.10",
+          "—",
+          "92.20"
+        ],
+        [
+          "General VQA",
+          "RealWorldQA",
+          "76.99",
+          "80.30",
+          "74.44",
+          "59.08",
+          "83.30",
+          "—",
+          "83.30"
+        ],
+        [
+          "OCR",
+          "OCRBench",
+          "85.50",
+          "89.20",
+          "86.75",
+          "76.90",
+          "90.40",
+          "—",
+          "80.70"
+        ]
+      ],
+      [
+        [
+          "Area",
+          "Benchmark",
+          "ZDTaichu5.0-9B",
+          "Qwen3.5-9B",
+          "STEP3-VL-10B",
+          "gemma4-8B-E4B",
+          "Gemini 3 Pro",
+          "Grok 4",
+          "GPT-5.2"
+        ],
+        [
+          "Knowledge",
+          "MMLU-Pro",
+          "77.20",
+          "82.50",
+          "76.02",
+          "69.40",
+          "89.80",
+          "85.90",
+          "87.40"
+        ],
+        [
+          "Knowledge",
+          "MMLU-Redux",
+          "88.40",
+          "91.10",
+          "86.50",
+          "85.30",
+          "95.90",
+          "86.22",
+          "95.00"
+        ],
+        [
+          "Instruction following",
+          "IFEval",
+          "93.70",
+          "88.72",
+          "82.16",
+          "87.80",
+          "93.50",
+          "92.80",
+          "94.80"
+        ],
+        [
+          "Instruction following",
+          "IFBench",
+          "69.00",
+          "64.50",
+          "41.49",
+          "34.70",
+          "70.40",
+          "53.70",
+          "75.40"
+        ],
+        [
+          "Reasoning and coding",
+          "AIME 2025",
+          "86.70",
+          "83.75",
+          "87.66",
+          "41.30",
+          "95.00",
+          "91.70",
+          "100.00"
+        ],
+        [
+          "Reasoning and coding",
+          "AIME 2026",
+          "89.20",
+          "87.92",
+          "88.75",
+          "42.50",
+          "90.60",
+          "—",
+          "96.70"
+        ],
+        [
+          "Reasoning and coding",
+          "HMMT Feb 2025",
+          "84.20",
+          "83.20",
+          "78.18",
+          "26.70",
+          "97.30",
+          "90.00",
+          "99.40"
+        ],
+        [
+          "Reasoning and coding",
+          "HMMT Feb 2026",
+          "72.70",
+          "73.48",
+          "63.64",
+          "33.70",
+          "86.36",
+          "—",
+          "96.97"
+        ],
+        [
+          "Reasoning and coding",
+          "LiveCodeBench v6",
+          "73.40",
+          "65.60",
+          "58.86",
+          "52.00",
+          "90.70",
+          "—",
+          "87.70"
+        ],
+        [
+          "General agent",
+          "TAU2-Bench†",
+          "87.70",
+          "79.10",
+          "81.70",
+          "42.40",
+          "85.40",
+          "—",
+          "87.10"
+        ],
+        [
+          "General agent",
+          "Claw-Eval general Avg†",
+          "71.40",
+          "66.50",
+          "66.60",
+          "52.10",
+          "—",
+          "—",
+          "—"
+        ]
+      ]
+    ],
+    "benchmark_tables_identical": true,
+    "code_nodes_preserved": 89,
+    "demo_groups": [
+      4,
+      10,
+      1,
+      2,
+      3
+    ],
+    "demo_count": 20,
+    "video_players": 11,
+    "svg_figures": 2,
+    "capabilities_merged": true,
+    "capability_annotated_cases": 20,
+    "license_removed": true,
+    "demo_layout": "conversation-carousel",
+    "model_name": "ZDTaichu5.0-9B",
+    "benchmark_best_only": true,
+    "benchmark_notes_small": true,
+    "highlights_count": 4,
+    "benchmark_score_decimal_places": 2,
+    "benchmark_score_rounding": "ROUND_HALF_UP",
+    "benchmark_table_order": [
+      "spatial-and-embodied",
+      "general-vision",
+      "language-and-agents"
+    ],
+    "capability_infographics_removed": true,
+    "demo_titles_unnumbered": true,
+    "quickstart_removed": true,
+    "intended_uses_removed": true,
+    "benchmark_areas_merged": true,
+    "general_visual_areas_grouped": true,
+    "omitted_demo_cases": [
+      "demo-case-08"
+    ],
+    "taichu_answers_unboxed": true,
+    "taichu_unboxed_response_panels": [
+      "demo-case-04-response-1",
+      "demo-case-05-response-1",
+      "demo-case-06-response-1",
+      "demo-case-07-response-1",
+      "demo-case-10-response-1",
+      "demo-case-11-response-1",
+      "demo-case-12-response-1",
+      "demo-case-13-response-1",
+      "demo-case-14-response-1",
+      "demo-case-15-response-1"
+    ],
+    "adaptive_reasoning_section": true,
+    "benchmark_figures": [
+      {
+        "src": "assets/taichu-release-benchmark-comparison.svg",
+        "sha256": "7109868f2f09641ee86a0b12dba6f56f56ffa3b7c71bbb8fa0db655b21876fe0"
+      },
+      {
+        "src": "assets/taichu-vs-closed-models.svg",
+        "sha256": "f60f21fba0be283d505e05d5aa77fd75378c0b5bc9ac6465e2423cb42eebe848"
+      }
+    ],
+    "viewpoint_input_images": 8,
+    "original_video_case": "arkitscenes/47429977.mp4",
+    "asset_cache_busting": "sha256-12"
+  },
+  "zh": {
+    "source": "README_zh.md",
+    "source_sha256": "1b261782da68f4f24e085b47666079a3606a3a02b2a187dfa8335d571d4d9063",
+    "benchmark_tables": [
+      [
+        [
+          "Area",
+          "Benchmark",
+          "ZDTaichu5.0-9B",
+          "Qwen3.5-9B",
+          "STEP3-VL-10B",
+          "gemma4-8B-E4B",
+          "Gemini 3 Pro",
+          "Grok 4",
+          "GPT-5.2"
+        ],
+        [
+          "基础空间感知",
+          "CV-Bench",
+          "86.82",
+          "87.19",
+          "83.49",
+          "68.10",
+          "90.07",
+          "—",
+          "86.84"
+        ],
+        [
+          "基础空间感知",
+          "3DSRBench",
+          "60.96",
+          "56.78",
+          "55.01",
+          "53.62",
+          "68.92",
+          "54.93",
+          "60.20"
+        ],
+        [
+          "基础空间感知",
+          "SparBench",
+          "51.82",
+          "50.79",
+          "45.68",
+          "28.50",
+          "48.74",
+          "44.76",
+          "55.07"
+        ],
+        [
+          "复杂空间推理",
+          "ViewSpatial",
+          "62.50",
+          "48.20",
+          "46.14",
+          "41.68",
+          "50.36",
+          "43.23",
+          "47.30"
+        ],
+        [
+          "复杂空间推理",
+          "MMSI-Bench",
+          "47.20",
+          "38.70",
+          "32.18",
+          "29.20",
+          "45.20",
+          "37.80",
+          "41.30"
+        ],
+        [
+          "复杂空间推理",
+          "MindCube-tiny",
+          "78.27",
+          "57.60",
+          "62.81",
+          "48.85",
+          "70.87",
+          "63.56",
+          "60.38"
+        ],
+        [
+          "具身交互",
+          "ERQA",
+          "48.00",
+          "41.50",
+          "47.75",
+          "30.20",
+          "66.00",
+          "—",
+          "59.80"
+        ],
+        [
+          "具身交互",
+          "RoboSpatial",
+          "56.00",
+          "54.10",
+          "52.86",
+          "49.43",
+          "57.40",
+          "—",
+          "43.78"
+        ],
+        [
+          "具身交互",
+          "VSI-Bench",
+          "59.69",
+          "55.68",
+          "42.42",
+          "32.91",
+          "52.51",
+          "47.92",
+          "54.49"
+        ]
+      ],
+      [
+        [
+          "Area",
+          "Benchmark",
+          "ZDTaichu5.0-9B",
+          "Qwen3.5-9B",
+          "STEP3-VL-10B",
+          "gemma4-8B-E4B",
+          "Gemini 3 Pro",
+          "Grok 4",
+          "GPT-5.2"
+        ],
+        [
+          "多模态推理",
+          "MathVista Mini",
+          "84.50",
+          "85.70",
+          "83.97",
+          "65.30",
+          "87.90",
+          "72.50",
+          "83.10"
+        ],
+        [
+          "多模态推理",
+          "WeMath",
+          "75.90",
+          "75.20",
+          "73.03",
+          "50.19",
+          "86.90",
+          "—",
+          "79.00"
+        ],
+        [
+          "多模态推理",
+          "MathVerse Mini Vision Only",
+          "76.40",
+          "84.14",
+          "74.60",
+          "53.55",
+          "—",
+          "—",
+          "—"
+        ],
+        [
+          "通用问答",
+          "MMStar",
+          "76.80",
+          "79.70",
+          "77.48",
+          "62.00",
+          "83.10",
+          "69.60",
+          "77.10"
+        ],
+        [
+          "通用问答",
+          "AI2D",
+          "91.48",
+          "90.20",
+          "89.35",
+          "79.15",
+          "94.10",
+          "—",
+          "92.20"
+        ],
+        [
+          "通用问答",
+          "RealWorldQA",
+          "76.99",
+          "80.30",
+          "74.44",
+          "59.08",
+          "83.30",
+          "—",
+          "83.30"
+        ],
+        [
+          "OCR",
+          "OCRBench",
+          "85.50",
+          "89.20",
+          "86.75",
+          "76.90",
+          "90.40",
+          "—",
+          "80.70"
+        ]
+      ],
+      [
+        [
+          "Area",
+          "Benchmark",
+          "ZDTaichu5.0-9B",
+          "Qwen3.5-9B",
+          "STEP3-VL-10B",
+          "gemma4-8B-E4B",
+          "Gemini 3 Pro",
+          "Grok 4",
+          "GPT-5.2"
+        ],
+        [
+          "知识",
+          "MMLU-Pro",
+          "77.20",
+          "82.50",
+          "76.02",
+          "69.40",
+          "89.80",
+          "85.90",
+          "87.40"
+        ],
+        [
+          "知识",
+          "MMLU-Redux",
+          "88.40",
+          "91.10",
+          "86.50",
+          "85.30",
+          "95.90",
+          "86.22",
+          "95.00"
+        ],
+        [
+          "指令遵循",
+          "IFEval",
+          "93.70",
+          "88.72",
+          "82.16",
+          "87.80",
+          "93.50",
+          "92.80",
+          "94.80"
+        ],
+        [
+          "指令遵循",
+          "IFBench",
+          "69.00",
+          "64.50",
+          "41.49",
+          "34.70",
+          "70.40",
+          "53.70",
+          "75.40"
+        ],
+        [
+          "推理与编程",
+          "AIME 2025",
+          "86.70",
+          "83.75",
+          "87.66",
+          "41.30",
+          "95.00",
+          "91.70",
+          "100.00"
+        ],
+        [
+          "推理与编程",
+          "AIME 2026",
+          "89.20",
+          "87.92",
+          "88.75",
+          "42.50",
+          "90.60",
+          "—",
+          "96.70"
+        ],
+        [
+          "推理与编程",
+          "HMMT Feb 2025",
+          "84.20",
+          "83.20",
+          "78.18",
+          "26.70",
+          "97.30",
+          "90.00",
+          "99.40"
+        ],
+        [
+          "推理与编程",
+          "HMMT Feb 2026",
+          "72.70",
+          "73.48",
+          "63.64",
+          "33.70",
+          "86.36",
+          "—",
+          "96.97"
+        ],
+        [
+          "推理与编程",
+          "LiveCodeBench v6",
+          "73.40",
+          "65.60",
+          "58.86",
+          "52.00",
+          "90.70",
+          "—",
+          "87.70"
+        ],
+        [
+          "通用 Agent",
+          "TAU2-Bench†",
+          "87.70",
+          "79.10",
+          "81.70",
+          "42.40",
+          "85.40",
+          "—",
+          "87.10"
+        ],
+        [
+          "通用 Agent",
+          "Claw-Eval general Avg†",
+          "71.40",
+          "66.50",
+          "66.60",
+          "52.10",
+          "—",
+          "—",
+          "—"
+        ]
+      ]
+    ],
+    "benchmark_tables_identical": true,
+    "code_nodes_preserved": 89,
+    "demo_groups": [
+      4,
+      10,
+      1,
+      2,
+      3
+    ],
+    "demo_count": 20,
+    "video_players": 11,
+    "svg_figures": 2,
+    "capabilities_merged": true,
+    "capability_annotated_cases": 20,
+    "license_removed": true,
+    "demo_layout": "conversation-carousel",
+    "model_name": "ZDTaichu5.0-9B",
+    "benchmark_best_only": true,
+    "benchmark_notes_small": true,
+    "highlights_count": 4,
+    "benchmark_score_decimal_places": 2,
+    "benchmark_score_rounding": "ROUND_HALF_UP",
+    "benchmark_table_order": [
+      "spatial-and-embodied",
+      "general-vision",
+      "language-and-agents"
+    ],
+    "capability_infographics_removed": true,
+    "demo_titles_unnumbered": true,
+    "quickstart_removed": true,
+    "intended_uses_removed": true,
+    "benchmark_areas_merged": true,
+    "general_visual_areas_grouped": true,
+    "omitted_demo_cases": [
+      "demo-case-08"
+    ],
+    "taichu_answers_unboxed": true,
+    "taichu_unboxed_response_panels": [
+      "demo-case-04-response-1",
+      "demo-case-05-response-1",
+      "demo-case-06-response-1",
+      "demo-case-07-response-1",
+      "demo-case-10-response-1",
+      "demo-case-11-response-1",
+      "demo-case-12-response-1",
+      "demo-case-13-response-1",
+      "demo-case-14-response-1",
+      "demo-case-15-response-1"
+    ],
+    "adaptive_reasoning_section": true,
+    "benchmark_figures": [
+      {
+        "src": "assets/taichu-release-benchmark-comparison.svg",
+        "sha256": "7109868f2f09641ee86a0b12dba6f56f56ffa3b7c71bbb8fa0db655b21876fe0"
+      },
+      {
+        "src": "assets/taichu-vs-closed-models.svg",
+        "sha256": "f60f21fba0be283d505e05d5aa77fd75378c0b5bc9ac6465e2423cb42eebe848"
+      }
+    ],
+    "viewpoint_input_images": 8,
+    "original_video_case": "arkitscenes/47429977.mp4",
+    "asset_cache_busting": "sha256-12"
+  }
+}

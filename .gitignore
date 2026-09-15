@@ -1,0 +1,43 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+build/
+dist/
+.venv/
+venv/
+
+# Editors and operating systems
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+
+# Model artifacts belong in the Hugging Face model repository
+*.safetensors
+*.safetensors.index.json
+*.bin
+*.pth
+*.pt
+*.ckpt
+*.onnx
+tokenizer.json
+
+# Datasets, caches, outputs, and secrets
+.cache/
+data/
+datasets/
+outputs/
+logs/
+wandb/
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.token

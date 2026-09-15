@@ -1,0 +1,2620 @@
+<!DOCTYPE html>
+
+<html lang="zh-CN"><head><meta charset="utf-8"/><meta content="width=device-width,initial-scale=1" name="viewport"/><meta content="#ffffff" name="theme-color"/><title>ZDTaichu5.0-9B · 从视觉理解到空间智能</title><meta content="通用视觉 · 空间推理 · 具身智能 · Agent" name="description"/><meta content="article" property="og:type"/><meta content="ZDTaichu5.0-9B · 从视觉理解到空间智能" property="og:title"/><meta content="通用视觉 · 空间推理 · 具身智能 · Agent" property="og:description"/><meta content="summary" name="twitter:card"/><link href="web/taichu-logo.png?v=90da889f0994" rel="icon" type="image/png"/><link href="web/style.css?v=4d5605757b4c" rel="stylesheet"/><script>document.documentElement.classList.add('js')</script><script defer="" src="web/app.js?v=69cc4e60d292"></script></head>
+<body id="top"><a class="skip-link" href="#article">模型介绍</a><header class="site-nav"><div class="nav-inner"><a class="brand" href="zh.html"><img alt="" height="40" src="web/taichu-logo.png?v=90da889f0994" width="40"/><span>ZDTaichu</span><span>Blog</span></a><nav aria-label="导航" class="nav-links"><a href="index.html" lang="en">English</a><button aria-controls="toc" aria-expanded="false" aria-label="本文目录" class="toc-toggle">☰</button></nav></div><div aria-hidden="true" class="progress"></div></header>
+<div class="page"><header class="article-header"><p class="eyebrow">MODEL RELEASE</p><h1>ZDTaichu5.0-9B</h1><p class="headline">从视觉理解到空间智能</p><div class="article-meta"><span>ZDTaichu 团队</span><i>·</i><span>Vision · Space · Action</span><i>·</i><button class="share-button">复制链接 ↗</button></div></header><div class="hero"><div class="hero-copy"><p>MULTIMODAL FOUNDATION MODEL</p><strong>ZDTaichu5.0-9B</strong><span>Visual · Spatial · Embodied · Agent</span><div class="hero-spec"><b>9B</b><i></i><b>128K CONTEXT</b><i></i><b>TEXT · IMAGE · VIDEO</b></div></div><svg aria-hidden="true" class="hero-art" fill="none" viewbox="0 0 340 300"><defs><radialgradient id="glow"><stop stop-color="#bea5e4" stop-opacity=".65"></stop><stop offset="1" stop-color="#e7dcf9" stop-opacity="0"></stop></radialgradient></defs><circle cx="170" cy="151" fill="url(#glow)" r="143"></circle><g stroke="#b7a0d6" stroke-width=".8"><ellipse cx="175" cy="151" rx="126" ry="42" transform="rotate(-30 175 151)"></ellipse><ellipse cx="175" cy="151" rx="126" ry="42" transform="rotate(30 175 151)"></ellipse><ellipse cx="175" cy="151" rx="126" ry="42" transform="rotate(90 175 151)"></ellipse></g><path d="m175 103 42 24v49l-42 24-42-24v-49Z" fill="#f1e8fc" stroke="#9571c0"></path><path d="m133 127 42 25 42-25m-42 25v49" stroke="#9571c0"></path><g fill="#9973c5"><circle cx="175" cy="25" r="3"></circle><circle cx="67" cy="214" r="3"></circle><circle cx="284" cy="213" r="3"></circle></g></svg></div><div class="resource-links"><a href="https://github.com/Taichu-AI/ZDTaichu5.0-9B" rel="noopener noreferrer" target="_blank">GitHub<span>↗</span></a><a href="https://www.modelscope.cn/models/TaichuAI/ZDTaichu5.0-9B" rel="noopener noreferrer" target="_blank">ModelScope<span>↗</span></a><a href="https://huggingface.co/TaichuAI/ZDTaichu5.0-9B" rel="noopener noreferrer" target="_blank">Hugging Face<span>↗</span></a><a href="#benchmark-results">基准评测<span>↗</span></a><a href="#qualitative-showcase">能力演示<span>↗</span></a></div>
+<aside aria-label="本文目录" class="toc" id="toc"><button aria-label="关闭" class="mobile-close">×</button><p>本文目录</p><a href="#introduction">模型介绍</a><a href="#highlights">核心亮点</a><a href="#model-overview">模型概览</a><a href="#adaptive-reasoning">自适应循环推理</a><a href="#benchmark-results">基准评测结果</a><a href="#qualitative-showcase">模型能力与示例展示</a><a href="#training">训练</a><a href="#acknowledgements">致谢</a><a href="#citation">引用</a><a class="toc-top" href="#top">返回顶部 ↑</a></aside><main class="article-content" id="article"><section class="article-section" id="introduction"><h2>模型介绍<a aria-label="模型介绍" href="#introduction">#</a></h2>
+<p>ZDTaichu5.0-9B 是面向通用视觉理解、空间推理、Agent 工具使用及具身智能研究的多模态基础模型。它结合 Qwen3.5-9B 语言骨干与 C-RADIOv4-H 视觉编码器，支持文本、图像和视频，并支持任意分辨率视觉输入。</p>
+<p>在本发布 Blog 对比的 9B 规模通用视觉语言模型（VLM）中，ZDTaichu5.0-9B 的通用视觉理解能力保持在第一梯队，并展现出最强的综合空间推理、高层具身 VLM 推理及 Agent 表现。在强大的通用视觉基础之上，模型进一步具备更全面的空间、具身和 Agent 能力，而非以牺牲通用视觉能力为代价进行专项优化。</p>
+<p>模型支持文本、单张或多张图像及视频输入，主要面向以下任务：</p>
+<ul>
+<li>通用图像、文档、图表、示意图理解及 OCR；</li>
+<li>视觉数学与结合知识的视觉问答；</li>
+<li>精细二维关系、多视角关联、三维场景理解、视角转换及心智变换；</li>
+<li>多步骤、多轮工具使用；</li>
+<li>面向视觉—语言—动作（VLA）及具身智能适配的空间感知、可供性理解和规划。</li>
+</ul>
+<p></p>
+</section><section class="article-section" id="highlights"><h2>核心亮点<a aria-label="核心亮点" href="#highlights">#</a></h2>
+<ul><li><strong>通用视觉理解与全面能力：</strong> 在图像、文档、图表、示意图、OCR、视觉数学、多图和视频等任务上，保持 9B 规模通用 VLM 第一梯队水平，并进一步覆盖空间推理、高层具身理解与多步骤 Agent 任务。</li><li><strong>空间推理与具身理解优势：</strong> 在所对比的 9B 规模通用 VLM 中，空间能力领先，在 SparBench、ViewSpatial、MMSI-Bench 和 MindCube-tiny 上表现突出；ERQA 与 RoboSpatial 分别达到 48 和 56，覆盖场景推理、可供性及交互理解。</li><li><strong>在所对比的 9B 规模通用 VLM 中，通用 Agent 能力最强：</strong> 在已报告的 TAU2-Bench（87.7）和Claw-Eval（71.4） 对比中领先，IFEval 达到 93.7。</li><li><strong>熵门控自适应循环推理：</strong> 根据输出不确定性动态调整推理深度，为困难 token 分配更多计算，并自适应停止。</li></ul>
+<p></p>
+</section><section class="article-section" id="model-overview"><h2>模型概览<a aria-label="模型概览" href="#model-overview">#</a></h2>
+<div aria-label="模型概览" class="table-scroll" role="region" tabindex="0"><table>
+<thead>
+<tr>
+<th>项目</th>
+<th>规格</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>模型类型</td>
+<td>带视觉编码器的多模态因果语言模型</td>
+</tr>
+<tr>
+<td>语言骨干</td>
+<td>Qwen3.5-9B LLM 解码器</td>
+</tr>
+<tr>
+<td>视觉骨干</td>
+<td>C-RADIOv4-H</td>
+</tr>
+<tr>
+<td>上下文长度</td>
+<td>最长 128K tokens</td>
+</tr>
+<tr>
+<td>视觉分辨率</td>
+<td>任意分辨率视觉输入</td>
+</tr>
+<tr>
+<td>输入模态</td>
+<td>文本、单图、多图及视频</td>
+</tr>
+</tbody>
+</table></div>
+<p></p>
+</section><section class="article-section" id="adaptive-reasoning"><h2>自适应循环推理<a aria-label="自适应循环推理" href="#adaptive-reasoning">#</a></h2><p>ZDTaichu5.0-9B 通过熵门控动态分配推理计算：根据当前 token 的输出不确定性，决定是否在潜在空间中继续细化隐藏状态，使推理深度随生成过程自适应调整。</p><ol><li><strong>按不确定性触发循环：</strong> 完成一次标准前向传播后，使用输出熵衡量当前 token 的不确定性。低熵 token 直接输出，高熵 token 触发中间层块的重复计算。</li><li><strong>在潜在空间迭代：</strong> 通过带阻尼和锚定的更新，逐步细化隐藏状态，为较难的 token 分配额外计算。</li><li><strong>根据收敛信号停止：</strong> 结合 KL 散度与隐藏状态残差判断停止时机，动态控制循环推理的深度。</li><li><strong>从循环轨迹选择输出：</strong> 轨迹读出选择风险最低的状态，并在必要时回滚。</li></ol></section><section class="article-section" id="benchmark-results"><h2>基准评测结果<a aria-label="基准评测结果" href="#benchmark-results">#</a></h2>
+<p><strong>与开源模型对比</strong></p>
+<figure class="publication-figure"><button aria-label="放大：ZDTaichu5.0-9B 与开源模型的榜单分数对比" class="figure-button" type="button"><img alt="ZDTaichu5.0-9B 与开源模型的榜单分数对比" decoding="async" loading="lazy" src="assets/taichu-release-benchmark-comparison.svg?v=7109868f2f09"/></button><figcaption><span>ZDTaichu5.0-9B 与开源模型的榜单分数对比</span><a download="" href="assets/taichu-release-benchmark-comparison.svg?v=7109868f2f09">SVG ↓</a></figcaption></figure>
+<p><strong>与闭源模型对比</strong></p>
+<figure class="publication-figure"><button aria-label="放大：ZDTaichu5.0-9B 与闭源模型的榜单分数对比" class="figure-button" type="button"><img alt="ZDTaichu5.0-9B 与闭源模型的榜单分数对比" decoding="async" loading="lazy" src="assets/taichu-vs-closed-models.svg?v=f60f21fba0be"/></button><figcaption><span>ZDTaichu5.0-9B 与闭源模型的榜单分数对比</span><a download="" href="assets/taichu-vs-closed-models.svg?v=f60f21fba0be">SVG ↓</a></figcaption></figure>
+<p>两张图分别展示 ZDTaichu5.0-9B 与开源模型、闭源模型的榜单分数对比，覆盖通用视觉理解、空间与具身能力，以及 Agent 与文本能力。</p>
+<h3 id="benchmark-results-2">空间与具身推理</h3>
+<div aria-label="基准评测结果" class="table-scroll" role="region" tabindex="0"><table class="benchmark-table has-area-column">
+  <thead>
+    <tr>
+      <th align="left">Area</th>
+      <th align="left">Benchmark</th>
+      <th align="right">ZDTaichu5.0-9B</th>
+      <th align="right">Qwen3.5-9B</th>
+      <th align="right">STEP3-VL-10B</th>
+      <th align="right">gemma4-8B-E4B</th>
+      <th align="right">Gemini 3 Pro</th>
+      <th align="right">Grok 4</th>
+      <th align="right">GPT-5.2</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td class="benchmark-area" rowspan="3" align="left" valign="middle">基础空间感知</td>
+      <td align="left">CV-Bench</td>
+      <td align="right">86.82</td>
+      <td class="best-score" align="right"><strong>87.19</strong></td>
+      <td align="right">83.49</td>
+      <td align="right">68.10</td>
+      <td align="right"><ins>90.07</ins></td>
+      <td align="right">—</td>
+      <td align="right">86.84</td>
+    </tr>
+    <tr>
+      <td align="left">3DSRBench</td>
+      <td class="best-score" align="right"><strong>60.96</strong></td>
+      <td align="right">56.78</td>
+      <td align="right">55.01</td>
+      <td align="right">53.62</td>
+      <td align="right"><ins>68.92</ins></td>
+      <td align="right">54.93</td>
+      <td align="right">60.20</td>
+    </tr>
+    <tr>
+      <td align="left">SparBench</td>
+      <td class="best-score" align="right"><strong>51.82</strong></td>
+      <td align="right">50.79</td>
+      <td align="right">45.68</td>
+      <td align="right">28.50</td>
+      <td align="right">48.74</td>
+      <td align="right">44.76</td>
+      <td align="right"><ins>55.07</ins></td>
+    </tr>
+    <tr>
+      <td class="benchmark-area" rowspan="3" align="left" valign="middle">复杂空间推理</td>
+      <td align="left">ViewSpatial</td>
+      <td class="best-score" align="right"><strong><ins>62.50</ins></strong></td>
+      <td align="right">48.20</td>
+      <td align="right">46.14</td>
+      <td align="right">41.68</td>
+      <td align="right">50.36</td>
+      <td align="right">43.23</td>
+      <td align="right">47.30</td>
+    </tr>
+    <tr>
+      <td align="left">MMSI-Bench</td>
+      <td class="best-score" align="right"><strong><ins>47.20</ins></strong></td>
+      <td align="right">38.70</td>
+      <td align="right">32.18</td>
+      <td align="right">29.20</td>
+      <td align="right">45.20</td>
+      <td align="right">37.80</td>
+      <td align="right">41.30</td>
+    </tr>
+    <tr>
+      <td align="left">MindCube-tiny</td>
+      <td class="best-score" align="right"><strong><ins>78.27</ins></strong></td>
+      <td align="right">57.60</td>
+      <td align="right">62.81</td>
+      <td align="right">48.85</td>
+      <td align="right">70.87</td>
+      <td align="right">63.56</td>
+      <td align="right">60.38</td>
+    </tr>
+    <tr>
+      <td class="benchmark-area" rowspan="3" align="left" valign="middle">具身交互</td>
+      <td align="left">ERQA</td>
+      <td class="best-score" align="right"><strong>48.00</strong></td>
+      <td align="right">41.50</td>
+      <td align="right">47.75</td>
+      <td align="right">30.20</td>
+      <td align="right"><ins>66.00</ins></td>
+      <td align="right">—</td>
+      <td align="right">59.80</td>
+    </tr>
+    <tr>
+      <td align="left">RoboSpatial</td>
+      <td class="best-score" align="right"><strong>56.00</strong></td>
+      <td align="right">54.10</td>
+      <td align="right">52.86</td>
+      <td align="right">49.43</td>
+      <td align="right"><ins>57.40</ins></td>
+      <td align="right">—</td>
+      <td align="right">43.78</td>
+    </tr>
+    <tr>
+      <td align="left">VSI-Bench</td>
+      <td class="best-score" align="right"><strong><ins>59.69</ins></strong></td>
+      <td align="right">55.68</td>
+      <td align="right">42.42</td>
+      <td align="right">32.91</td>
+      <td align="right">52.51</td>
+      <td align="right">47.92</td>
+      <td align="right">54.49</td>
+    </tr>
+  </tbody>
+</table></div><p class="table-hint">横向滑动查看全部模型 ↔</p>
+<h3 id="benchmark-results-1">通用视觉理解</h3>
+<div aria-label="基准评测结果" class="table-scroll" role="region" tabindex="0"><table class="benchmark-table has-area-column">
+  <thead>
+    <tr>
+      <th align="left">Area</th>
+      <th align="left">Benchmark</th>
+      <th align="right">ZDTaichu5.0-9B</th>
+      <th align="right">Qwen3.5-9B</th>
+      <th align="right">STEP3-VL-10B</th>
+      <th align="right">gemma4-8B-E4B</th>
+      <th align="right">Gemini 3 Pro</th>
+      <th align="right">Grok 4</th>
+      <th align="right">GPT-5.2</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td align="left" rowspan="3" valign="middle">多模态推理</td>
+      <td align="left">MathVista Mini</td>
+      <td align="right">84.50</td>
+      <td class="best-score" align="right"><strong>85.70</strong></td>
+      <td align="right">83.97</td>
+      <td align="right">65.30</td>
+      <td align="right"><ins>87.90</ins></td>
+      <td align="right">72.50</td>
+      <td align="right">83.10</td>
+    </tr>
+    <tr>
+      <td align="left">WeMath</td>
+      <td class="best-score" align="right"><strong>75.90</strong></td>
+      <td align="right">75.20</td>
+      <td align="right">73.03</td>
+      <td align="right">50.19</td>
+      <td align="right"><ins>86.90</ins></td>
+      <td align="right">—</td>
+      <td align="right">79.00</td>
+    </tr>
+    <tr>
+      <td align="left">MathVerse Mini Vision Only</td>
+      <td align="right">76.40</td>
+      <td class="best-score" align="right"><strong><ins>84.14</ins></strong></td>
+      <td align="right">74.60</td>
+      <td align="right">53.55</td>
+      <td align="right">—</td>
+      <td align="right">—</td>
+      <td align="right">—</td>
+    </tr>
+    <tr>
+      <td align="left" rowspan="3" valign="middle">通用问答</td>
+      <td align="left">MMStar</td>
+      <td align="right">76.80</td>
+      <td class="best-score" align="right"><strong>79.70</strong></td>
+      <td align="right">77.48</td>
+      <td align="right">62.00</td>
+      <td align="right"><ins>83.10</ins></td>
+      <td align="right">69.60</td>
+      <td align="right">77.10</td>
+    </tr>
+    <tr>
+      <td align="left">AI2D</td>
+      <td class="best-score" align="right"><strong>91.48</strong></td>
+      <td align="right">90.20</td>
+      <td align="right">89.35</td>
+      <td align="right">79.15</td>
+      <td align="right"><ins>94.10</ins></td>
+      <td align="right">—</td>
+      <td align="right">92.20</td>
+    </tr>
+    <tr>
+      <td align="left">RealWorldQA</td>
+      <td align="right">76.99</td>
+      <td class="best-score" align="right"><strong>80.30</strong></td>
+      <td align="right">74.44</td>
+      <td align="right">59.08</td>
+      <td align="right"><ins>83.30</ins></td>
+      <td align="right">—</td>
+      <td align="right"><ins>83.30</ins></td>
+    </tr>
+    <tr>
+      <td align="left" valign="middle">OCR</td>
+      <td align="left">OCRBench</td>
+      <td align="right">85.50</td>
+      <td class="best-score" align="right"><strong>89.20</strong></td>
+      <td align="right">86.75</td>
+      <td align="right">76.90</td>
+      <td align="right"><ins>90.40</ins></td>
+      <td align="right">—</td>
+      <td align="right">80.70</td>
+    </tr>
+  </tbody>
+</table></div><p class="table-hint">横向滑动查看全部模型 ↔</p>
+<h3 id="benchmark-results-3">语言、推理与 Agent</h3>
+<div aria-label="基准评测结果" class="table-scroll" role="region" tabindex="0"><table class="benchmark-table has-area-column">
+  <thead>
+    <tr>
+      <th align="left">Area</th>
+      <th align="left">Benchmark</th>
+      <th align="right">ZDTaichu5.0-9B</th>
+      <th align="right">Qwen3.5-9B</th>
+      <th align="right">STEP3-VL-10B</th>
+      <th align="right">gemma4-8B-E4B</th>
+      <th align="right">Gemini 3 Pro</th>
+      <th align="right">Grok 4</th>
+      <th align="right">GPT-5.2</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td class="benchmark-area" rowspan="2" align="left" valign="middle">知识</td>
+      <td align="left">MMLU-Pro</td>
+      <td align="right">77.20</td>
+      <td class="best-score" align="right"><strong>82.50</strong></td>
+      <td align="right">76.02</td>
+      <td align="right">69.40</td>
+      <td align="right"><ins>89.80</ins></td>
+      <td align="right">85.90</td>
+      <td align="right">87.40</td>
+    </tr>
+    <tr>
+      <td align="left">MMLU-Redux</td>
+      <td align="right">88.40</td>
+      <td class="best-score" align="right"><strong>91.10</strong></td>
+      <td align="right">86.50</td>
+      <td align="right">85.30</td>
+      <td align="right"><ins>95.90</ins></td>
+      <td align="right">86.22</td>
+      <td align="right">95.00</td>
+    </tr>
+    <tr>
+      <td class="benchmark-area" rowspan="2" align="left" valign="middle">指令遵循</td>
+      <td align="left">IFEval</td>
+      <td class="best-score" align="right"><strong>93.70</strong></td>
+      <td align="right">88.72</td>
+      <td align="right">82.16</td>
+      <td align="right">87.80</td>
+      <td align="right">93.50</td>
+      <td align="right">92.80</td>
+      <td align="right"><ins>94.80</ins></td>
+    </tr>
+    <tr>
+      <td align="left">IFBench</td>
+      <td class="best-score" align="right"><strong>69.00</strong></td>
+      <td align="right">64.50</td>
+      <td align="right">41.49</td>
+      <td align="right">34.70</td>
+      <td align="right">70.40</td>
+      <td align="right">53.70</td>
+      <td align="right"><ins>75.40</ins></td>
+    </tr>
+    <tr>
+      <td class="benchmark-area" rowspan="5" align="left" valign="middle">推理与编程</td>
+      <td align="left">AIME 2025</td>
+      <td align="right">86.70</td>
+      <td align="right">83.75</td>
+      <td class="best-score" align="right"><strong>87.66</strong></td>
+      <td align="right">41.30</td>
+      <td align="right">95.00</td>
+      <td align="right">91.70</td>
+      <td align="right"><ins>100.00</ins></td>
+    </tr>
+    <tr>
+      <td align="left">AIME 2026</td>
+      <td class="best-score" align="right"><strong>89.20</strong></td>
+      <td align="right">87.92</td>
+      <td align="right">88.75</td>
+      <td align="right">42.50</td>
+      <td align="right">90.60</td>
+      <td align="right">—</td>
+      <td align="right"><ins>96.70</ins></td>
+    </tr>
+    <tr>
+      <td align="left">HMMT Feb 2025</td>
+      <td class="best-score" align="right"><strong>84.20</strong></td>
+      <td align="right">83.20</td>
+      <td align="right">78.18</td>
+      <td align="right">26.70</td>
+      <td align="right">97.30</td>
+      <td align="right">90.00</td>
+      <td align="right"><ins>99.40</ins></td>
+    </tr>
+    <tr>
+      <td align="left">HMMT Feb 2026</td>
+      <td align="right">72.70</td>
+      <td class="best-score" align="right"><strong>73.48</strong></td>
+      <td align="right">63.64</td>
+      <td align="right">33.70</td>
+      <td align="right">86.36</td>
+      <td align="right">—</td>
+      <td align="right"><ins>96.97</ins></td>
+    </tr>
+    <tr>
+      <td align="left">LiveCodeBench v6</td>
+      <td class="best-score" align="right"><strong>73.40</strong></td>
+      <td align="right">65.60</td>
+      <td align="right">58.86</td>
+      <td align="right">52.00</td>
+      <td align="right"><ins>90.70</ins></td>
+      <td align="right">—</td>
+      <td align="right">87.70</td>
+    </tr>
+    <tr>
+      <td class="benchmark-area" rowspan="2" align="left" valign="middle">通用 Agent</td>
+      <td align="left">TAU2-Bench†</td>
+      <td class="best-score" align="right"><strong><ins>87.70</ins></strong></td>
+      <td align="right">79.10</td>
+      <td align="right">81.70</td>
+      <td align="right">42.40</td>
+      <td align="right">85.40</td>
+      <td align="right">—</td>
+      <td align="right">87.10</td>
+    </tr>
+    <tr>
+      <td align="left">Claw-Eval<sub>general</sub> Avg†</td>
+      <td class="best-score" align="right"><strong><ins>71.40</ins></strong></td>
+      <td align="right">66.50</td>
+      <td align="right">66.60</td>
+      <td align="right">52.10</td>
+      <td align="right">—</td>
+      <td align="right">—</td>
+      <td align="right">—</td>
+    </tr>
+  </tbody>
+</table></div><p class="table-hint">横向滑动查看全部模型 ↔</p>
+<p class="benchmark-note"><strong>粗体</strong>表示所列开源模型中的最高分；<ins>下划线</ins>表示所有列出模型中的最高分。同时在两类比较中领先的分数将以粗体并加下划线标示。并列最高分采用相同标记。缺失分数不参与比较。</p>
+<p class="benchmark-note">† 本地 TAU2-Bench 和 Claw-Eval 通用任务评测使用 DeepSeek-V4-Flash-0731 作为模拟用户和/或裁判；外部公开分数沿用其引用来源所采用的评测设置。</p>
+<p class="benchmark-note">‡ 外部公开报告的分数。EASI 结果采用提供的、于 2026-09-08 审核的导出数据，分数四舍五入至小数点后两位。</p>
+<p class="benchmark-note" id="spatial-evaluation-prompt">对于 ViewSpatial、MMSI-Bench、MindCube-tiny 和 VSI-Bench 等多图空间推理评测，在评测提示词中加入了以下输出格式要求：You FIRST think about the reasoning process as an internal monologue and then provide the final answer. The reasoning process MUST BE enclosed within &lt;think&gt; &lt;/think&gt; tags. The final answer MUST BE put in \boxed{}.</p></section><section class="article-section" data-demo-layout="conversation" id="qualitative-showcase"><span class="anchor-alias" id="capabilities"></span><h2>模型能力与示例展示<a aria-label="模型能力与示例展示" href="#qualitative-showcase">#</a></h2><p class="capabilities-intro">结合具体任务，展示通用视觉、空间推理、多图与视频理解、Agent 工具使用及具身行动规划能力。</p>
+<label class="gallery-tools"><input checked="" id="autoplay" type="checkbox"/> 自动播放</label><section aria-labelledby="readme-demos-vision-heading" class="demo-group" id="readme-demos-vision"><span class="anchor-alias" id="capabilities-1"></span><h3 id="readme-demos-vision-heading">通用视觉理解</h3><div class="demo-group-intro"><p class="capability-overview">识别物体、属性和场景，读取图像与文档中的文字，理解图表和示意图，并结合视觉证据进行计算与问答。</p>
+</div><div class="demo-controls"><button aria-controls="readme-demos-vision-gallery" aria-expanded="false" class="demo-expand" type="button"><span class="demo-expand-label">展开全部示例</span><span aria-hidden="true" class="demo-chevron"></span></button></div><div class="demo-gallery" id="readme-demos-vision-gallery"><article class="demo-card" data-demo-index="0" id="demo-case-01"><div class="demo-card-header"><div class="demo-caption"><span class="demo-label">示例</span><h4 id="demo-case-01-heading">图表理解与视觉推理</h4></div><div aria-label="切换示例" class="demo-pagination"><button aria-label="上一个示例" class="demo-page-prev" disabled="" type="button"><span aria-hidden="true" class="demo-chevron"></span></button><span aria-live="polite" class="demo-page-count">1 / 4</span><button aria-label="下一个示例" class="demo-page-next" type="button"><span aria-hidden="true" class="demo-chevron"></span></button></div></div><div aria-labelledby="demo-case-01-heading" class="demo-card-body" role="region" tabindex="0">
+<div class="case-capability"><div class="capability-heading"><span class="capability-label">展示能力</span><ul aria-label="展示能力" class="capability-tags"><li>图表理解</li><li>视觉数学推理</li></ul></div><p>读取函数图中的变化关系，判断局部极大值对应的位置。</p></div>
+<div class="demo-user-message">
+<p><strong>题目</strong></p><p>Hint: Please answer the question and provide the correct option letter, e.g., A, B, C, D, at the end.<br/>
+Question: When does the function reach its local maximum?<br/>
+Choices:<br/>
+(A) (u1, u2) = (0, 0)<br/>
+(B) (u1, u2) = (1, 0)<br/>
+(C) (u1, u2) = (0, 1)<br/>
+(D) (u1, u2) = (1, 1)</p>
+<div class="demo-media">
+<p><img alt="图表理解与视觉推理" decoding="async" loading="lazy" src="assets/demos/comparisons/case-01/image-01.png?v=ca286e0e7703"/></p>
+</div></div>
+<div class="responses"><div aria-label="三个模型的原始回答" class="tabs response-tabs" role="tablist"><button aria-controls="demo-case-01-response-1" aria-selected="true" class="tab" id="demo-case-01-response-tab-1" role="tab" tabindex="0" type="button">ZDTaichu5.0-9B</button><button aria-controls="demo-case-01-response-2" aria-selected="false" class="tab" id="demo-case-01-response-tab-2" role="tab" tabindex="-1" type="button">Qwen3.5-9B</button><button aria-controls="demo-case-01-response-3" aria-selected="false" class="tab" id="demo-case-01-response-tab-3" role="tab" tabindex="-1" type="button">STEP3-VL-10B</button></div><div aria-labelledby="demo-case-01-response-tab-1" class="response-panel" id="demo-case-01-response-1" role="tabpanel">
+<p class="demo-assistant-name"><img alt="" height="28" src="web/taichu-logo.png?v=90da889f0994" width="28"/><span>ZDTaichu5.0-9B</span></p>
+<div class="demo-answer-content"><p>The graph shows a 3D surface plot of the function $f(u_1, u_2)$. To find the local maximum, we need to identify the highest point on the surface.</p>
+<ol>
+<li><strong>Identify the axes:</strong> The horizontal axes represent the variables $u_1$ and $u_2$, and the vertical axis represents the value of the function $f(u_1, u_2)$.</li>
+<li><strong>Locate the peak:</strong> The surface is shaped like a pyramid. The highest point of the pyramid corresponds to the maximum value of the function.</li>
+<li><strong>Determine the coordinates:</strong> Looking at the base of the pyramid, the peak is located directly above the corner where both $u_1$ and $u_2$ are at their minimum values. The axis for $u_1$ starts at 0 and goes to 1, and the axis for $u_2$ starts at 0 and goes to 1. The highest point is above the origin $(0, 0)$. As we move away from this point towards $u_1=1$ or $u_2=1$, the height of the surface decreases.</li>
+</ol>
+<p>Therefore, the function reaches its maximum value at the point $(u_1, u_2) = (0, 0)$.</p>
+<p>A</p>
+</div><details class="demo-raw-answer"><summary>查看原始回答</summary><pre><code class="language-text">
+The graph shows a 3D surface plot of the function $f(u_1, u_2)$. To find the local maximum, we need to identify the highest point on the surface.
+
+1.  **Identify the axes:** The horizontal axes represent the variables $u_1$ and $u_2$, and the vertical axis represents the value of the function $f(u_1, u_2)$.
+2.  **Locate the peak:** The surface is shaped like a pyramid. The highest point of the pyramid corresponds to the maximum value of the function.
+3.  **Determine the coordinates:** Looking at the base of the pyramid, the peak is located directly above the corner where both $u_1$ and $u_2$ are at their minimum values. The axis for $u_1$ starts at 0 and goes to 1, and the axis for $u_2$ starts at 0 and goes to 1. The highest point is above the origin $(0, 0)$. As we move away from this point towards $u_1=1$ or $u_2=1$, the height of the surface decreases.
+
+Therefore, the function reaches its maximum value at the point $(u_1, u_2) = (0, 0)$.
+
+A
+</code></pre></details>
+</div><div aria-labelledby="demo-case-01-response-tab-2" class="response-panel" id="demo-case-01-response-2" role="tabpanel">
+<p class="demo-assistant-name"><span>Qwen3.5-9B</span></p>
+<div class="demo-answer-content"><p>The graph shows a 3D surface plot of a function $f(u_1, u_2)$.</p>
+<ul>
+<li>The vertical axis represents the value of the function $f(u_1, u_2)$. It ranges from 0 to 1.</li>
+<li>The horizontal plane represents the domain of the function with axes $u_1$ and $u_2$.</li>
+<li>Looking at the base of the plot (the $u_1, u_2$ plane), we can identify the four corners of the unit square domain $[0,1] \times [0,1]$.
+<ul>
+<li>The origin corner is where the vertical axis $f$ starts. Here, $f(0,0) = 0$.</li>
+<li>The corner to the right (along the $u_1$ axis) has $u_1=1, u_2=0$. The surface height is low, near 0.</li>
+<li>The corner to the back (along the $u_2$ axis) has $u_1=0, u_2=1$. The surface height rises significantly.</li>
+<li>The far back corner has $u_1=1, u_2=1$. The surface height is low, near 0.</li>
+</ul>
+</li>
+<li>The highest point on the surface (the peak) is located at the back-left corner of the base domain.</li>
+<li>Tracing the coordinates of this peak:
+<ul>
+<li>It lies on the plane $u_1 = 0$ (the left edge).</li>
+<li>It lies on the plane $u_2 = 1$ (the back edge).</li>
+</ul>
+</li>
+<li>Therefore, the function reaches its local (and global) maximum at $(u_1, u_2) = (0, 1)$.</li>
+<li>The value of the function at this point is 1.</li>
+</ul>
+<p>This corresponds to option (C).</p>
+<p>C</p>
+</div><details class="demo-raw-answer"><summary>查看原始回答</summary><pre><code class="language-text">The graph shows a 3D surface plot of a function $f(u_1, u_2)$.
+- The vertical axis represents the value of the function $f(u_1, u_2)$. It ranges from 0 to 1.
+- The horizontal plane represents the domain of the function with axes $u_1$ and $u_2$.
+- Looking at the base of the plot (the $u_1, u_2$ plane), we can identify the four corners of the unit square domain $[0,1] \times [0,1]$.
+    - The origin corner is where the vertical axis $f$ starts. Here, $f(0,0) = 0$.
+    - The corner to the right (along the $u_1$ axis) has $u_1=1, u_2=0$. The surface height is low, near 0.
+    - The corner to the back (along the $u_2$ axis) has $u_1=0, u_2=1$. The surface height rises significantly.
+    - The far back corner has $u_1=1, u_2=1$. The surface height is low, near 0.
+- The highest point on the surface (the peak) is located at the back-left corner of the base domain.
+- Tracing the coordinates of this peak:
+    - It lies on the plane $u_1 = 0$ (the left edge).
+    - It lies on the plane $u_2 = 1$ (the back edge).
+- Therefore, the function reaches its local (and global) maximum at $(u_1, u_2) = (0, 1)$.
+- The value of the function at this point is 1.
+
+This corresponds to option (C).
+
+C
+</code></pre></details>
+</div><div aria-labelledby="demo-case-01-response-tab-3" class="response-panel" id="demo-case-01-response-3" role="tabpanel">
+<p class="demo-assistant-name"><span>STEP3-VL-10B</span></p>
+<div class="demo-answer-content"><p>To determine where the function ( f(u_1, u_2) ) reaches its local maximum, analyze the 3D plot:</p>
+<ul>
+<li><strong>Option (A) ((u_1, u_2) = (0, 0)):</strong> This is the front - left corner of the domain. On the plot, ( f(0, 0) = 0 ), so it is not the maximum.</li>
+<li><strong>Option (B) ((u_1, u_2) = (1, 0)):</strong> This is the front - right corner. ( f(1, 0) = 0 ), not the maximum.</li>
+<li><strong>Option (C) ((u_1, u_2) = (0, 1)):</strong> This is the back - left corner. The surface reaches its highest vertical value (maximum ( f )) at this point.</li>
+<li><strong>Option (D) ((u_1, u_2) = (1, 1)):</strong> This is the back - right corner. ( f(1, 1) = 0 ), which is a minimum, not a maximum.</li>
+</ul>
+<p>Thus, the function reaches its local maximum at ((u_1, u_2) = (0, 1)), so the answer is C.</p>
+</div><details class="demo-raw-answer"><summary>查看原始回答</summary><pre><code class="language-text">To determine where the function \( f(u_1, u_2) \) reaches its local maximum, analyze the 3D plot:  
+
+- **Option (A) \((u_1, u_2) = (0, 0)\):** This is the front - left corner of the domain. On the plot, \( f(0, 0) = 0 \), so it is not the maximum.  
+- **Option (B) \((u_1, u_2) = (1, 0)\):** This is the front - right corner. \( f(1, 0) = 0 \), not the maximum.  
+- **Option (C) \((u_1, u_2) = (0, 1)\):** This is the back - left corner. The surface reaches its highest vertical value (maximum \( f \)) at this point.  
+- **Option (D) \((u_1, u_2) = (1, 1)\):** This is the back - right corner. \( f(1, 1) = 0 \), which is a minimum, not a maximum.  
+
+
+Thus, the function reaches its local maximum at \((u_1, u_2) = (0, 1)\), so the answer is C.
+</code></pre></details>
+</div></div><div class="demo-reference"><p><strong>标准答案</strong></p><p>A</p><details>
+<summary><strong>查看原始题目</strong></summary>
+<p><strong>题目</strong></p>
+<pre><code class="language-text">Hint: Please answer the question and provide the correct option letter, e.g., A, B, C, D, at the end.
+Question: When does the function reach its local maximum?
+Choices:
+(A) (u1, u2) = (0, 0)
+(B) (u1, u2) = (1, 0)
+(C) (u1, u2) = (0, 1)
+(D) (u1, u2) = (1, 1)
+</code></pre>
+<p><strong>标准答案</strong></p>
+<pre><code class="language-text">A
+</code></pre>
+</details><div aria-label="能力示例展示" class="table-scroll" role="region" tabindex="0"><table class="result-table">
+<thead>
+<tr>
+<th>模型</th>
+<th>回答</th>
+<th>判定</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ZDTaichu5.0-9B</td>
+<td>A. (u1, u2) = (0, 0)</td>
+<td>✓ 正确</td>
+</tr>
+<tr>
+<td>Qwen3.5-9B</td>
+<td>C. (u1, u2) = (0, 1)</td>
+<td>✗ 错误</td>
+</tr>
+<tr>
+<td>STEP3-VL-10B</td>
+<td>C. (u1, u2) = (0, 1)</td>
+<td>✗ 错误</td>
+</tr>
+</tbody>
+</table></div></div></div></article><article class="demo-card" data-demo-index="1" id="demo-case-02"><div class="demo-card-header"><div class="demo-caption"><span class="demo-label">示例</span><h4 id="demo-case-02-heading">视觉数学</h4></div><div aria-label="切换示例" class="demo-pagination"><button aria-label="上一个示例" class="demo-page-prev" type="button"><span aria-hidden="true" class="demo-chevron"></span></button><span aria-live="polite" class="demo-page-count">2 / 4</span><button aria-label="下一个示例" class="demo-page-next" type="button"><span aria-hidden="true" class="demo-chevron"></span></button></div></div><div aria-labelledby="demo-case-02-heading" class="demo-card-body" role="region" tabindex="0">
+<div class="case-capability"><div class="capability-heading"><span class="capability-label">展示能力</span><ul aria-label="展示能力" class="capability-tags"><li>图中文字读取</li><li>数值推理</li></ul></div><p>提取图片中的年龄信息，并计算两人的年龄差。</p></div>
+<div class="demo-user-message">
+<p><strong>题目</strong></p><p>Hint: Please answer the question requiring an integer answer and provide the final value, e.g., 1, 2, 3, at the end.<br/>
+Question: What is the age gap between these two people in image? (Unit: years)</p>
+<div class="demo-media">
+<p><img alt="视觉数学" decoding="async" loading="lazy" src="assets/demos/comparisons/case-02/image-01.png?v=3e1c92aa4997"/></p>
+</div></div>
+<div class="responses"><div aria-label="三个模型的原始回答" class="tabs response-tabs" role="tablist"><button aria-controls="demo-case-02-response-1" aria-selected="true" class="tab" id="demo-case-02-response-tab-1" role="tab" tabindex="0" type="button">ZDTaichu5.0-9B</button><button aria-controls="demo-case-02-response-2" aria-selected="false" class="tab" id="demo-case-02-response-tab-2" role="tab" tabindex="-1" type="button">Qwen3.5-9B</button><button aria-controls="demo-case-02-response-3" aria-selected="false" class="tab" id="demo-case-02-response-tab-3" role="tab" tabindex="-1" type="button">STEP3-VL-10B</button></div><div aria-labelledby="demo-case-02-response-tab-1" class="response-panel" id="demo-case-02-response-1" role="tabpanel">
+<p class="demo-assistant-name"><img alt="" height="28" src="web/taichu-logo.png?v=90da889f0994" width="28"/><span>ZDTaichu5.0-9B</span></p>
+<div class="demo-answer-content"><p>The two people in the image are Winston Churchill (left) and Charles de Gaulle (right).</p>
+<ul>
+<li>Winston Churchill was born on November 30, 1874.</li>
+<li>Charles de Gaulle was born on November 22, 1890.</li>
+</ul>
+<p>The age gap between them is 1890 - 1874 = 16 years.</p>
+<p>16</p>
+</div><details class="demo-raw-answer"><summary>查看原始回答</summary><pre><code class="language-text">
+The two people in the image are Winston Churchill (left) and Charles de Gaulle (right).
+
+*   Winston Churchill was born on November 30, 1874.
+*   Charles de Gaulle was born on November 22, 1890.
+
+The age gap between them is 1890 - 1874 = 16 years.
+
+16
+</code></pre></details>
+</div><div aria-labelledby="demo-case-02-response-tab-2" class="response-panel" id="demo-case-02-response-2" role="tabpanel">
+<p class="demo-assistant-name"><span>Qwen3.5-9B</span></p>
+<div class="demo-answer-content"><p>The two people in the image are <strong>Winston Churchill</strong> (born November 30, 1874) and <strong>Bernard Law Montgomery</strong> (born November 17, 1887).</p>
+<p>The age gap is calculated as: 1887 - 1874 = 13 years.</p>
+<p>13</p>
+</div><details class="demo-raw-answer"><summary>查看原始回答</summary><pre><code class="language-text">The two people in the image are **Winston Churchill** (born November 30, 1874) and **Bernard Law Montgomery** (born November 17, 1887).
+
+The age gap is calculated as: 1887 - 1874 = 13 years.
+
+13
+</code></pre></details>
+</div><div aria-labelledby="demo-case-02-response-tab-3" class="response-panel" id="demo-case-02-response-3" role="tabpanel">
+<p class="demo-assistant-name"><span>STEP3-VL-10B</span></p>
+<div class="demo-answer-content"><p>To determine the age gap, first identify the individuals: the person on the left is Winston Churchill (born 1874) and the person on the right is Charles de Gaulle (born 1886). Calculate the difference: ( 1886 - 1874 = 12 ).</p>
+<p>12</p>
+</div><details class="demo-raw-answer"><summary>查看原始回答</summary><pre><code class="language-text">To determine the age gap, first identify the individuals: the person on the left is Winston Churchill (born 1874) and the person on the right is Charles de Gaulle (born 1886). Calculate the difference: \( 1886 - 1874 = 12 \).  
+
+12
+</code></pre></details>
+</div></div><div class="demo-reference"><p><strong>标准答案</strong></p><p>16</p><details>
+<summary><strong>查看原始题目</strong></summary>
+<p><strong>题目</strong></p>
+<pre><code class="language-text">Hint: Please answer the question requiring an integer answer and provide the final value, e.g., 1, 2, 3, at the end.
+Question: What is the age gap between these two people in image? (Unit: years)
+</code></pre>
+<p><strong>标准答案</strong></p>
+<pre><code class="language-text">16
+</code></pre>
+</details><div aria-label="能力示例展示" class="table-scroll" role="region" tabindex="0"><table class="result-table">
+<thead>
+<tr>
+<th>模型</th>
+<th>回答</th>
+<th>判定</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ZDTaichu5.0-9B</td>
+<td>16. years</td>
+<td>✓ 正确</td>
+</tr>
+<tr>
+<td>Qwen3.5-9B</td>
+<td>13. years</td>
+<td>✗ 错误</td>
+</tr>
+<tr>
+<td>STEP3-VL-10B</td>
+<td>12. years</td>
+<td>✗ 错误</td>
+</tr>
+</tbody>
+</table></div></div></div></article><article class="demo-card" data-demo-index="2" id="demo-case-03"><div class="demo-card-header"><div class="demo-caption"><span class="demo-label">示例</span><h4 id="demo-case-03-heading">真实世界场景推理</h4></div><div aria-label="切换示例" class="demo-pagination"><button aria-label="上一个示例" class="demo-page-prev" type="button"><span aria-hidden="true" class="demo-chevron"></span></button><span aria-live="polite" class="demo-page-count">3 / 4</span><button aria-label="下一个示例" class="demo-page-next" type="button"><span aria-hidden="true" class="demo-chevron"></span></button></div></div><div aria-labelledby="demo-case-03-heading" class="demo-card-body" role="region" tabindex="0">
+<div class="case-capability"><div class="capability-heading"><span class="capability-label">展示能力</span><ul aria-label="展示能力" class="capability-tags"><li>场景理解</li><li>关系判断</li></ul></div><p>结合道路布局与信号灯位置，判断信号灯对应的路口。</p></div>
+<div class="demo-user-message">
+<p><strong>题目</strong></p><p>Is the traffic light ahead controlling the intersection closest to us?</p>
+<p><strong>选项</strong></p><p>A. Yes<br/>
+B. No</p>
+<div class="demo-media">
+<p><img alt="真实世界场景推理" decoding="async" loading="lazy" src="assets/demos/comparisons/case-03/image-01.png?v=f5eef59880b6"/></p>
+</div></div>
+<div class="responses"><div aria-label="三个模型的原始回答" class="tabs response-tabs" role="tablist"><button aria-controls="demo-case-03-response-1" aria-selected="true" class="tab" id="demo-case-03-response-tab-1" role="tab" tabindex="0" type="button">ZDTaichu5.0-9B</button><button aria-controls="demo-case-03-response-2" aria-selected="false" class="tab" id="demo-case-03-response-tab-2" role="tab" tabindex="-1" type="button">Qwen3.5-9B</button><button aria-controls="demo-case-03-response-3" aria-selected="false" class="tab" id="demo-case-03-response-tab-3" role="tab" tabindex="-1" type="button">STEP3-VL-10B</button></div><div aria-labelledby="demo-case-03-response-tab-1" class="response-panel" id="demo-case-03-response-1" role="tabpanel">
+<p class="demo-assistant-name"><img alt="" height="28" src="web/taichu-logo.png?v=90da889f0994" width="28"/><span>ZDTaichu5.0-9B</span></p>
+<div class="demo-answer-content"><p>The traffic light is located further down the road, not at the immediate intersection in front of the camera. Therefore, it is not controlling the intersection closest to us.</p>
+<p>B. No</p>
+</div><details class="demo-raw-answer"><summary>查看原始回答</summary><pre><code class="language-text">
+The traffic light is located further down the road, not at the immediate intersection in front of the camera. Therefore, it is not controlling the intersection closest to us.
+
+B. No
+</code></pre></details>
+</div><div aria-labelledby="demo-case-03-response-tab-2" class="response-panel" id="demo-case-03-response-2" role="tabpanel">
+<p class="demo-assistant-name"><span>Qwen3.5-9B</span></p>
+<div class="demo-answer-content"><p>A. Yes</p>
+</div><details class="demo-raw-answer"><summary>查看原始回答</summary><pre><code class="language-text">A. Yes
+</code></pre></details>
+</div><div aria-labelledby="demo-case-03-response-tab-3" class="response-panel" id="demo-case-03-response-3" role="tabpanel">
+<p class="demo-assistant-name"><span>STEP3-VL-10B</span></p>
+<div class="demo-answer-content"><p>Based on the image, the traffic light visible in the distance is positioned at the location of the first major intersection (indicated by the pedestrian crossing and stop lines on the road ahead). There are no other intersections or traffic lights closer to the viewer's position on the road. Therefore, the traffic light ahead is indeed controlling the intersection closest to us.</p>
+<p>A. Yes</p>
+</div><details class="demo-raw-answer"><summary>查看原始回答</summary><pre><code class="language-text">Based on the image, the traffic light visible in the distance is positioned at the location of the first major intersection (indicated by the pedestrian crossing and stop lines on the road ahead). There are no other intersections or traffic lights closer to the viewer's position on the road. Therefore, the traffic light ahead is indeed controlling the intersection closest to us.
+
+A. Yes
+</code></pre></details>
+</div></div><div class="demo-reference"><p><strong>标准答案</strong></p><p>B</p><details>
+<summary><strong>查看原始题目</strong></summary>
+<p><strong>题目</strong></p>
+<pre><code class="language-text">Is the traffic light ahead controlling the intersection closest to us?
+</code></pre>
+<p><strong>选项</strong></p>
+<pre><code class="language-text">A. Yes
+B. No
+</code></pre>
+<p><strong>标准答案</strong></p>
+<pre><code class="language-text">B
+</code></pre>
+</details><div aria-label="能力示例展示" class="table-scroll" role="region" tabindex="0"><table class="result-table">
+<thead>
+<tr>
+<th>模型</th>
+<th>回答</th>
+<th>判定</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ZDTaichu5.0-9B</td>
+<td>B. No</td>
+<td>✓ 正确</td>
+</tr>
+<tr>
+<td>Qwen3.5-9B</td>
+<td>A. Yes</td>
+<td>✗ 错误</td>
+</tr>
+<tr>
+<td>STEP3-VL-10B</td>
+<td>A. Yes</td>
+<td>✗ 错误</td>
+</tr>
+</tbody>
+</table></div></div></div></article><article class="demo-card" data-demo-index="3" id="demo-case-04"><div class="demo-card-header"><div class="demo-caption"><span class="demo-label">示例</span><h4 id="demo-case-04-heading">精细识别</h4></div><div aria-label="切换示例" class="demo-pagination"><button aria-label="上一个示例" class="demo-page-prev" type="button"><span aria-hidden="true" class="demo-chevron"></span></button><span aria-live="polite" class="demo-page-count">4 / 4</span><button aria-label="下一个示例" class="demo-page-next" disabled="" type="button"><span aria-hidden="true" class="demo-chevron"></span></button></div></div><div aria-labelledby="demo-case-04-heading" class="demo-card-body" role="region" tabindex="0">
+<div class="case-capability"><div class="capability-heading"><span class="capability-label">展示能力</span><ul aria-label="展示能力" class="capability-tags"><li>精细识别</li><li>属性辨别</li></ul></div><p>在复杂场景中找到目标动物，并辨别其颜色属性。</p></div>
+<div class="demo-user-message">
+<p><strong>题目</strong></p><p>What is the color of the dog?</p>
+<p><strong>选项</strong></p><p>A. gray<br/>
+B. yellow<br/>
+C. brown<br/>
+D. black and white</p>
+<div class="demo-media">
+<p><img alt="精细识别" decoding="async" loading="lazy" src="assets/demos/comparisons/case-04/image-01.png?v=8182565741cb"/></p>
+</div></div>
+<div class="responses"><div aria-label="三个模型的原始回答" class="tabs response-tabs" role="tablist"><button aria-controls="demo-case-04-response-1" aria-selected="true" class="tab" id="demo-case-04-response-tab-1" role="tab" tabindex="0" type="button">ZDTaichu5.0-9B</button><button aria-controls="demo-case-04-response-2" aria-selected="false" class="tab" id="demo-case-04-response-tab-2" role="tab" tabindex="-1" type="button">Qwen3.5-9B</button><button aria-controls="demo-case-04-response-3" aria-selected="false" class="tab" id="demo-case-04-response-tab-3" role="tab" tabindex="-1" type="button">STEP3-VL-10B</button></div><div aria-labelledby="demo-case-04-response-tab-1" class="response-panel" id="demo-case-04-response-1" role="tabpanel">
+<p class="demo-assistant-name"><img alt="" height="28" src="web/taichu-logo.png?v=90da889f0994" width="28"/><span>ZDTaichu5.0-9B</span></p>
+<div class="demo-answer-content"><p>The dog is located on the beach near the group of people sitting down on the left side of the image. It has a coat that is clearly black and white.</p>
+<p>D</p>
+</div><details class="demo-raw-answer"><summary>查看原始回答</summary><pre><code class="language-text">
+The dog is located on the beach near the group of people sitting down on the left side of the image. It has a coat that is clearly black and white.
+
+D
+</code></pre></details>
+</div><div aria-labelledby="demo-case-04-response-tab-2" class="response-panel" id="demo-case-04-response-2" role="tabpanel">
+<p class="demo-assistant-name"><span>Qwen3.5-9B</span></p>
+<div class="demo-answer-content"><p>The dog is visible on the beach near the people sitting on the sand. It appears to be a small, light-colored dog, likely <strong>gray</strong> or white. Since "white" is not an option, and the dog is not distinctly brown or yellow, and doesn't show clear black patches to suggest "black and white" (though it's small and blurry), <strong>gray</strong> is the most appropriate description from the given choices. It has a light, somewhat grayish coat.</p>
+<p>A. gray</p>
+</div><details class="demo-raw-answer"><summary>查看原始回答</summary><pre><code class="language-text">
+
+The dog is visible on the beach near the people sitting on the sand. It appears to be a small, light-colored dog, likely **gray** or white. Since "white" is not an option, and the dog is not distinctly brown or yellow, and doesn't show clear black patches to suggest "black and white" (though it's small and blurry), **gray** is the most appropriate description from the given choices. It has a light, somewhat grayish coat.
+
+A. gray
+</code></pre></details>
+</div><div aria-labelledby="demo-case-04-response-tab-3" class="response-panel" id="demo-case-04-response-3" role="tabpanel">
+<p class="demo-assistant-name"><span>STEP3-VL-10B</span></p>
+<div class="demo-answer-content"><p>B</p>
+</div><details class="demo-raw-answer"><summary>查看原始回答</summary><pre><code class="language-text">
+B
+</code></pre></details>
+</div></div><div class="demo-reference"><p><strong>标准答案</strong></p><p>D</p><details>
+<summary><strong>查看原始题目</strong></summary>
+<p><strong>题目</strong></p>
+<pre><code class="language-text">What is the color of the dog?
+</code></pre>
+<p><strong>选项</strong></p>
+<pre><code class="language-text">A. gray
+B. yellow
+C. brown
+D. black and white
+</code></pre>
+<p><strong>标准答案</strong></p>
+<pre><code class="language-text">D
+</code></pre>
+</details><div aria-label="能力示例展示" class="table-scroll" role="region" tabindex="0"><table class="result-table">
+<thead>
+<tr>
+<th>模型</th>
+<th>回答</th>
+<th>判定</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ZDTaichu5.0-9B</td>
+<td>D. black and white</td>
+<td>✓ 正确</td>
+</tr>
+<tr>
+<td>Qwen3.5-9B</td>
+<td>A. gray</td>
+<td>✗ 错误</td>
+</tr>
+<tr>
+<td>STEP3-VL-10B</td>
+<td>B. yellow</td>
+<td>✗ 错误</td>
+</tr>
+</tbody>
+</table></div></div></div></article></div></section><section aria-labelledby="readme-demos-spatial-heading" class="demo-group" id="readme-demos-spatial"><span class="anchor-alias" id="capabilities-2"></span><h3 id="readme-demos-spatial-heading">空间感知与推理</h3><div class="demo-group-intro"><p class="capability-overview">从目标定位、计数与相对位置判断，延伸到跨视角关联、深度与布局理解、参照系转换、心理旋转、截面推理及高层操作规划。</p>
+</div><div class="demo-controls"><button aria-controls="readme-demos-spatial-gallery" aria-expanded="false" class="demo-expand" type="button"><span class="demo-expand-label">展开全部示例</span><span aria-hidden="true" class="demo-chevron"></span></button></div><div class="demo-gallery" id="readme-demos-spatial-gallery"><article class="demo-card" data-demo-index="0" id="spatial-capability-showcase"><div class="demo-card-header"><div class="demo-caption"><span class="demo-label">示例</span><h4 id="spatial-capability-showcase-heading">空间能力：目标定位、杯柄方向推理与多视角心理旋转</h4></div><div aria-label="切换示例" class="demo-pagination"><button aria-label="上一个示例" class="demo-page-prev" disabled="" type="button"><span aria-hidden="true" class="demo-chevron"></span></button><span aria-live="polite" class="demo-page-count">1 / 10</span><button aria-label="下一个示例" class="demo-page-next" type="button"><span aria-hidden="true" class="demo-chevron"></span></button></div></div><div aria-labelledby="spatial-capability-showcase-heading" class="demo-card-body" role="region" tabindex="0"><div class="case-capability"><div class="capability-heading"><span class="capability-label">展示能力</span><ul aria-label="展示能力" class="capability-tags"><li>目标定位</li><li>方向推理</li><li>多视角心理旋转</li></ul></div><p>通过六个案例展示目标位置识别、杯柄朝向判断与跨视角旋转推理。</p></div>
+<p class="demo-assistant-name"><img alt="" height="28" src="web/taichu-logo.png?v=90da889f0994" width="28"/><span>ZDTaichu5.0-9B</span></p><div class="demo-assistant-output"><div class="demo-media">
+<div class="player"><video aria-label="空间能力：目标定位、杯柄方向推理与多视角心理旋转" controls="" data-base-speed="1" loop="" muted="" playsinline="" poster="assets/spatial/zdtaichu-correct-six-clips-en.jpg?v=610b77552e10" preload="none"><source src="assets/spatial/zdtaichu-correct-six-clips-en.mp4?v=d6f9ba69c6f4" type="video/mp4"/><source src="assets/spatial/zdtaichu-correct-six-clips-en.webm?v=abd06b77ecec" type="video/webm"/>Your browser does not support video.</video><div class="player-foot"><label>速度 <select aria-label="速度"><option value="1">1×</option><option value="1.5">1.5×</option><option selected="" value="2">2×</option><option value="3">3×</option></select></label><a href="assets/spatial/zdtaichu-correct-six-clips-en.mp4?v=d6f9ba69c6f4" rel="noopener" target="_blank">MP4 ↗</a></div></div>
+</div><div class="demo-description">
+<p>这段 视频 以 2 倍速播放，时长约 1 分 14 秒，包含目标定位、杯柄方向推理与多视角心理旋转三类能力、共六个精选案例。每个案例同屏展示输入场景、问题，以及保存的 ZDTaichu5.0-9B、Qwen3.5-9B 与 STEP3-VL-10B 输出。</p>
+</div></div>
+<details>
+<summary><strong>视频 章节与说明</strong></summary>
+<div aria-label="能力示例展示" class="table-scroll" role="region" tabindex="0"><table>
+<thead>
+<tr>
+<th>视频 章节（2 倍速，约）</th>
+<th>能力</th>
+<th>示例</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><button class="chapter-button" data-seconds="0.0" type="button">00:00–00:12</button></td>
+<td>目标定位</td>
+<td>最远的白色柜子</td>
+</tr>
+<tr>
+<td><button class="chapter-button" data-seconds="12.0" type="button">00:12–00:24</button></td>
+<td>目标定位</td>
+<td>从左数第二个银色盒子</td>
+</tr>
+<tr>
+<td><button class="chapter-button" data-seconds="24.0" type="button">00:24–00:36</button></td>
+<td>杯柄方向推理</td>
+<td>最右侧白色杯子杯柄方向的空闲区域</td>
+</tr>
+<tr>
+<td><button class="chapter-button" data-seconds="36.0" type="button">00:36–00:48</button></td>
+<td>杯柄方向推理</td>
+<td>绿色杯子杯柄方向的空闲区域</td>
+</tr>
+<tr>
+<td><button class="chapter-button" data-seconds="48.0" type="button">00:48–01:00.5</button></td>
+<td>多视角心理旋转</td>
+<td>视角旋转后的马桶方位</td>
+</tr>
+<tr>
+<td><button class="chapter-button" data-seconds="60.5" type="button">01:00.5–01:14</button></td>
+<td>多视角心理旋转</td>
+<td>视角旋转后的柜子方位</td>
+</tr>
+</tbody>
+</table></div>
+</details>
+</div></article><article class="demo-card" data-demo-index="1" id="demo-case-05"><div class="demo-card-header"><div class="demo-caption"><span class="demo-label">示例</span><h4 id="demo-case-05-heading">八个视角间的视角变换</h4></div><div aria-label="切换示例" class="demo-pagination"><button aria-label="上一个示例" class="demo-page-prev" type="button"><span aria-hidden="true" class="demo-chevron"></span></button><span aria-live="polite" class="demo-page-count">2 / 10</span><button aria-label="下一个示例" class="demo-page-next" type="button"><span aria-hidden="true" class="demo-chevron"></span></button></div></div><div aria-labelledby="demo-case-05-heading" class="demo-card-body" role="region" tabindex="0">
+<div class="case-capability"><div class="capability-heading"><span class="capability-label">展示能力</span><ul aria-label="展示能力" class="capability-tags"><li>跨视角关联</li><li>参照系转换</li></ul></div><p>综合八个视角，在指定站位和朝向下判断物体方位。</p></div>
+<div class="demo-user-message">
+<p><strong>题目</strong></p><p>Imagine standing at desk looking towards cabinet, where is box?</p>
+<p><strong>选项</strong></p><p>A. back<br/>
+B. right<br/>
+C. front<br/>
+D. left</p>
+<div class="demo-media">
+<div class="demo-image-grid"><figure><button aria-label="放大：八个视角间的视角变换 · 1/8" class="figure-button demo-image-button" type="button"><img alt="八个视角间的视角变换 · 1/8" decoding="async" loading="lazy" src="assets/demos/comparisons/case-05/image-01.jpg?v=9d166597566b" width="100%"/></button><figcaption>1 / 8</figcaption></figure><figure><button aria-label="放大：八个视角间的视角变换 · 2/8" class="figure-button demo-image-button" type="button"><img alt="八个视角间的视角变换 · 2/8" decoding="async" loading="lazy" src="assets/demos/comparisons/case-05/image-02.jpg?v=b05ab4e3933e" width="100%"/></button><figcaption>2 / 8</figcaption></figure><figure><button aria-label="放大：八个视角间的视角变换 · 3/8" class="figure-button demo-image-button" type="button"><img alt="八个视角间的视角变换 · 3/8" decoding="async" loading="lazy" src="assets/demos/comparisons/case-05/image-03.jpg?v=37cea76a34a7" width="100%"/></button><figcaption>3 / 8</figcaption></figure><figure><button aria-label="放大：八个视角间的视角变换 · 4/8" class="figure-button demo-image-button" type="button"><img alt="八个视角间的视角变换 · 4/8" decoding="async" loading="lazy" src="assets/demos/comparisons/case-05/image-04.jpg?v=78221fb987f2" width="100%"/></button><figcaption>4 / 8</figcaption></figure><figure><button aria-label="放大：八个视角间的视角变换 · 5/8" class="figure-button demo-image-button" type="button"><img alt="八个视角间的视角变换 · 5/8" decoding="async" loading="lazy" src="assets/demos/comparisons/case-05/image-05.jpg?v=8c1ecf398cf6" width="100%"/></button><figcaption>5 / 8</figcaption></figure><figure><button aria-label="放大：八个视角间的视角变换 · 6/8" class="figure-button demo-image-button" type="button"><img alt="八个视角间的视角变换 · 6/8" decoding="async" loading="lazy" src="assets/demos/comparisons/case-05/image-06.jpg?v=f90332a63594" width="100%"/></button><figcaption>6 / 8</figcaption></figure><figure><button aria-label="放大：八个视角间的视角变换 · 7/8" class="figure-button demo-image-button" type="button"><img alt="八个视角间的视角变换 · 7/8" decoding="async" loading="lazy" src="assets/demos/comparisons/case-05/image-07.jpg?v=d41b9a1b56ca" width="100%"/></button><figcaption>7 / 8</figcaption></figure><figure><button aria-label="放大：八个视角间的视角变换 · 8/8" class="figure-button demo-image-button" type="button"><img alt="八个视角间的视角变换 · 8/8" decoding="async" loading="lazy" src="assets/demos/comparisons/case-05/image-08.jpg?v=d64df3ceaec3" width="100%"/></button><figcaption>8 / 8</figcaption></figure></div>
+</div></div>
+<div class="responses"><div aria-label="三个模型的原始回答" class="tabs response-tabs" role="tablist"><button aria-controls="demo-case-05-response-1" aria-selected="true" class="tab" id="demo-case-05-response-tab-1" role="tab" tabindex="0" type="button">ZDTaichu5.0-9B</button><button aria-controls="demo-case-05-response-2" aria-selected="false" class="tab" id="demo-case-05-response-tab-2" role="tab" tabindex="-1" type="button">Qwen3.5-9B</button><button aria-controls="demo-case-05-response-3" aria-selected="false" class="tab" id="demo-case-05-response-tab-3" role="tab" tabindex="-1" type="button">STEP3-VL-10B</button></div><div aria-labelledby="demo-case-05-response-tab-1" class="response-panel" id="demo-case-05-response-1" role="tabpanel">
+<p class="demo-assistant-name"><img alt="" height="28" src="web/taichu-logo.png?v=90da889f0994" width="28"/><span>ZDTaichu5.0-9B</span></p>
+<div class="demo-answer-content"><p>The reference frame is from the desk looking toward the cabinet (the white mini-fridge). The box is located near the cabinet and the whiteboard area, which is in the direction the observer is facing. Therefore, the box is in front.</p>
+<p>C</p>
+</div><details class="demo-raw-answer"><summary>查看原始回答</summary><pre><code class="language-text">
+The reference frame is from the desk looking toward the cabinet (the white mini-fridge). The box is located near the cabinet and the whiteboard area, which is in the direction the observer is facing. Therefore, the box is in front.
+
+C
+</code></pre></details>
+</div><div aria-labelledby="demo-case-05-response-tab-2" class="response-panel" id="demo-case-05-response-2" role="tabpanel">
+<p class="demo-assistant-name"><span>Qwen3.5-9B</span></p>
+<div class="demo-answer-content"><p>D</p>
+</div><details class="demo-raw-answer"><summary>查看原始回答</summary><pre><code class="language-text">
+
+D
+</code></pre></details>
+</div><div aria-labelledby="demo-case-05-response-tab-3" class="response-panel" id="demo-case-05-response-3" role="tabpanel">
+<p class="demo-assistant-name"><span>STEP3-VL-10B</span></p>
+<div class="demo-answer-content"><p>B</p>
+</div><details class="demo-raw-answer"><summary>查看原始回答</summary><pre><code class="language-text">
+B
+</code></pre></details>
+</div></div><div class="demo-reference"><p><strong>标准答案</strong></p><p>C</p><details>
+<summary><strong>查看原始题目</strong></summary>
+<p><strong>题目</strong></p>
+<pre><code class="language-text">Imagine standing at desk looking towards cabinet, where is box?
+</code></pre>
+<p><strong>选项</strong></p>
+<pre><code class="language-text">A. back
+B. right
+C. front
+D. left
+</code></pre>
+<p><strong>标准答案</strong></p>
+<pre><code class="language-text">C
+</code></pre>
+</details><div aria-label="能力示例展示" class="table-scroll" role="region" tabindex="0"><table class="result-table">
+<thead>
+<tr>
+<th>模型</th>
+<th>回答</th>
+<th>判定</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ZDTaichu5.0-9B</td>
+<td>C. front</td>
+<td>✓ 正确</td>
+</tr>
+<tr>
+<td>Qwen3.5-9B</td>
+<td>D. left</td>
+<td>✗ 错误</td>
+</tr>
+<tr>
+<td>STEP3-VL-10B</td>
+<td>B. right</td>
+<td>✗ 错误</td>
+</tr>
+</tbody>
+</table></div></div></div></article><article class="demo-card" data-demo-index="2" id="demo-case-06"><div class="demo-card-header"><div class="demo-caption"><span class="demo-label">示例</span><h4 id="demo-case-06-heading">三维空间关系</h4></div><div aria-label="切换示例" class="demo-pagination"><button aria-label="上一个示例" class="demo-page-prev" type="button"><span aria-hidden="true" class="demo-chevron"></span></button><span aria-live="polite" class="demo-page-count">3 / 10</span><button aria-label="下一个示例" class="demo-page-next" type="button"><span aria-hidden="true" class="demo-chevron"></span></button></div></div><div aria-labelledby="demo-case-06-heading" class="demo-card-body" role="region" tabindex="0">
+<div class="case-capability"><div class="capability-heading"><span class="capability-label">展示能力</span><ul aria-label="展示能力" class="capability-tags"><li>三维空间关系</li><li>深度判断</li></ul></div><p>以观察者为参照，联合判断两个对象的左右、上下和远近关系。</p></div>
+<div class="demo-user-message">
+<p><strong>题目</strong></p><p>Where does the stove (red bbox) appear to be located in relation to the kitchen cabinet (blue bbox) in the given image, relative to the observer? Calculate or judge based on the 3D center points of these objects.<br/>
+The options describe the spatial relationship between two objects in terms of left-right (left, right, or empty if indistinguishable), above-below (above, below, or empty if indistinguishable), and farther-closer (farther, closer, or empty if indistinguishable).<br/>
+Choose the correct response from the given choices.<br/>
+A. right, , closer<br/>
+B. left, below, closer<br/>
+C. , above, closer<br/>
+D. right, , farther<br/>
+Your answer can only include one of options A, B, C or D.</p>
+<p><strong>选项</strong></p><p>A. right, , closer<br/>
+B. left, below, closer<br/>
+C. , above, closer<br/>
+D. right, , farther</p>
+<div class="demo-media">
+<p><img alt="三维空间关系" decoding="async" loading="lazy" src="assets/demos/comparisons/case-06/image-01.jpg?v=52c796c2d34b"/></p>
+</div></div>
+<div class="responses"><div aria-label="三个模型的原始回答" class="tabs response-tabs" role="tablist"><button aria-controls="demo-case-06-response-1" aria-selected="true" class="tab" id="demo-case-06-response-tab-1" role="tab" tabindex="0" type="button">ZDTaichu5.0-9B</button><button aria-controls="demo-case-06-response-2" aria-selected="false" class="tab" id="demo-case-06-response-tab-2" role="tab" tabindex="-1" type="button">Qwen3.5-9B</button><button aria-controls="demo-case-06-response-3" aria-selected="false" class="tab" id="demo-case-06-response-tab-3" role="tab" tabindex="-1" type="button">STEP3-VL-10B</button></div><div aria-labelledby="demo-case-06-response-tab-1" class="response-panel" id="demo-case-06-response-1" role="tabpanel">
+<p class="demo-assistant-name"><img alt="" height="28" src="web/taichu-logo.png?v=90da889f0994" width="28"/><span>ZDTaichu5.0-9B</span></p>
+<div class="demo-answer-content"><p>The stove (red bbox) is positioned to the right of the kitchen cabinet (blue bbox) from the observer's perspective. Additionally, the stove appears slightly closer to the camera than the cabinet, as suggested by the perspective and overlap. There is no significant vertical difference (above/below) to categorize.</p>
+<p>A</p>
+</div><details class="demo-raw-answer"><summary>查看原始回答</summary><pre><code class="language-text">
+The stove (red bbox) is positioned to the right of the kitchen cabinet (blue bbox) from the observer's perspective. Additionally, the stove appears slightly closer to the camera than the cabinet, as suggested by the perspective and overlap. There is no significant vertical difference (above/below) to categorize.
+
+A
+</code></pre></details>
+</div><div aria-labelledby="demo-case-06-response-tab-2" class="response-panel" id="demo-case-06-response-2" role="tabpanel">
+<p class="demo-assistant-name"><span>Qwen3.5-9B</span></p>
+<div class="demo-answer-content"><p>D</p>
+</div><details class="demo-raw-answer"><summary>查看原始回答</summary><pre><code class="language-text">
+
+D
+</code></pre></details>
+</div><div aria-labelledby="demo-case-06-response-tab-3" class="response-panel" id="demo-case-06-response-3" role="tabpanel">
+<p class="demo-assistant-name"><span>STEP3-VL-10B</span></p>
+<div class="demo-answer-content"><p>D</p>
+</div><details class="demo-raw-answer"><summary>查看原始回答</summary><pre><code class="language-text">
+D
+</code></pre></details>
+</div></div><div class="demo-reference"><p><strong>标准答案</strong></p><p>A</p><details>
+<summary><strong>查看原始题目</strong></summary>
+<p><strong>题目</strong></p>
+<pre><code class="language-text">Where does the stove (red bbox) appear to be located in relation to the kitchen cabinet (blue bbox) in the given image, relative to the observer? Calculate or judge based on the 3D center points of these objects.
+The options describe the spatial relationship between two objects in terms of left-right (left, right, or empty if indistinguishable), above-below (above, below, or empty if indistinguishable), and farther-closer (farther, closer, or empty if indistinguishable).
+Choose the correct response from the given choices.
+A. right, , closer
+B. left, below, closer
+C. , above, closer
+D. right, , farther
+Your answer can only include one of options A, B, C or D.
+</code></pre>
+<p><strong>选项</strong></p>
+<pre><code class="language-text">A. right, , closer
+B. left, below, closer
+C. , above, closer
+D. right, , farther
+</code></pre>
+<p><strong>标准答案</strong></p>
+<pre><code class="language-text">A
+</code></pre>
+</details><div aria-label="能力示例展示" class="table-scroll" role="region" tabindex="0"><table class="result-table">
+<thead>
+<tr>
+<th>模型</th>
+<th>回答</th>
+<th>判定</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ZDTaichu5.0-9B</td>
+<td>A. right, , closer</td>
+<td>✓ 正确</td>
+</tr>
+<tr>
+<td>Qwen3.5-9B</td>
+<td>D. right, , farther</td>
+<td>✗ 错误</td>
+</tr>
+<tr>
+<td>STEP3-VL-10B</td>
+<td>D. right, , farther</td>
+<td>✗ 错误</td>
+</tr>
+</tbody>
+</table></div></div></div></article><article class="demo-card" data-demo-index="3" id="demo-case-07"><div class="demo-card-header"><div class="demo-caption"><span class="demo-label">示例</span><h4 id="demo-case-07-heading">多物体空间关系</h4></div><div aria-label="切换示例" class="demo-pagination"><button aria-label="上一个示例" class="demo-page-prev" type="button"><span aria-hidden="true" class="demo-chevron"></span></button><span aria-live="polite" class="demo-page-count">4 / 10</span><button aria-label="下一个示例" class="demo-page-next" type="button"><span aria-hidden="true" class="demo-chevron"></span></button></div></div><div aria-labelledby="demo-case-07-heading" class="demo-card-body" role="region" tabindex="0">
+<div class="case-capability"><div class="capability-heading"><span class="capability-label">展示能力</span><ul aria-label="展示能力" class="capability-tags"><li>多物体关系</li><li>相对距离判断</li></ul></div><p>以水槽为参照，比较冰箱与橱柜的三维距离。</p></div>
+<div class="demo-user-message">
+<p><strong>题目</strong></p><p>Decide whether the green point (refrigerator) or the blue point (kitchen cabinet) is closer to sink (red point). Calculate or judge based on the 3D center points of these objects. Choose the correct answer from the choices available.<br/>
+A. kitchen cabinet (blue point)<br/>
+B. refrigerator (green point)<br/>
+Your answer can only include one of options A, B.</p>
+<p><strong>选项</strong></p><p>A. kitchen cabinet (blue point)<br/>
+B. refrigerator (green point)</p>
+<div class="demo-media">
+<p><img alt="多物体空间关系" decoding="async" loading="lazy" src="assets/demos/comparisons/case-07/image-01.jpg?v=241ed8256551"/></p>
+</div></div>
+<div class="responses"><div aria-label="三个模型的原始回答" class="tabs response-tabs" role="tablist"><button aria-controls="demo-case-07-response-1" aria-selected="true" class="tab" id="demo-case-07-response-tab-1" role="tab" tabindex="0" type="button">ZDTaichu5.0-9B</button><button aria-controls="demo-case-07-response-2" aria-selected="false" class="tab" id="demo-case-07-response-tab-2" role="tab" tabindex="-1" type="button">Qwen3.5-9B</button><button aria-controls="demo-case-07-response-3" aria-selected="false" class="tab" id="demo-case-07-response-tab-3" role="tab" tabindex="-1" type="button">STEP3-VL-10B</button></div><div aria-labelledby="demo-case-07-response-tab-1" class="response-panel" id="demo-case-07-response-1" role="tabpanel">
+<p class="demo-assistant-name"><img alt="" height="28" src="web/taichu-logo.png?v=90da889f0994" width="28"/><span>ZDTaichu5.0-9B</span></p>
+<div class="demo-answer-content"><p>The red point is at the sink on the countertop. The blue point is on an upper cabinet further back against the wall, while the green point is on the refrigerator which is positioned directly next to the counter. The refrigerator's center is spatially closer to the sink area than the upper cabinet's center, making the green point closer.</p>
+<p>B</p>
+</div><details class="demo-raw-answer"><summary>查看原始回答</summary><pre><code class="language-text">
+The red point is at the sink on the countertop. The blue point is on an upper cabinet further back against the wall, while the green point is on the refrigerator which is positioned directly next to the counter. The refrigerator's center is spatially closer to the sink area than the upper cabinet's center, making the green point closer.
+
+B
+</code></pre></details>
+</div><div aria-labelledby="demo-case-07-response-tab-2" class="response-panel" id="demo-case-07-response-2" role="tabpanel">
+<p class="demo-assistant-name"><span>Qwen3.5-9B</span></p>
+<div class="demo-answer-content"><p>A</p>
+</div><details class="demo-raw-answer"><summary>查看原始回答</summary><pre><code class="language-text">
+
+A
+</code></pre></details>
+</div><div aria-labelledby="demo-case-07-response-tab-3" class="response-panel" id="demo-case-07-response-3" role="tabpanel">
+<p class="demo-assistant-name"><span>STEP3-VL-10B</span></p>
+<div class="demo-answer-content"><p>A</p>
+</div><details class="demo-raw-answer"><summary>查看原始回答</summary><pre><code class="language-text">
+A
+</code></pre></details>
+</div></div><div class="demo-reference"><p><strong>标准答案</strong></p><p>B</p><details>
+<summary><strong>查看原始题目</strong></summary>
+<p><strong>题目</strong></p>
+<pre><code class="language-text">Decide whether the green point (refrigerator) or the blue point (kitchen cabinet) is closer to sink (red point). Calculate or judge based on the 3D center points of these objects. Choose the correct answer from the choices available.
+A. kitchen cabinet (blue point)
+B. refrigerator (green point)
+Your answer can only include one of options A, B.
+</code></pre>
+<p><strong>选项</strong></p>
+<pre><code class="language-text">A. kitchen cabinet (blue point)
+B. refrigerator (green point)
+</code></pre>
+<p><strong>标准答案</strong></p>
+<pre><code class="language-text">B
+</code></pre>
+</details><div aria-label="能力示例展示" class="table-scroll" role="region" tabindex="0"><table class="result-table">
+<thead>
+<tr>
+<th>模型</th>
+<th>回答</th>
+<th>判定</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ZDTaichu5.0-9B</td>
+<td>B. refrigerator (green point)</td>
+<td>✓ 正确</td>
+</tr>
+<tr>
+<td>Qwen3.5-9B</td>
+<td>A. kitchen cabinet (blue point)</td>
+<td>✗ 错误</td>
+</tr>
+<tr>
+<td>STEP3-VL-10B</td>
+<td>A. kitchen cabinet (blue point)</td>
+<td>✗ 错误</td>
+</tr>
+</tbody>
+</table></div></div></div></article><article class="demo-card" data-demo-index="4" id="demo-case-09"><div class="demo-card-header"><div class="demo-caption"><span class="demo-label">示例</span><h4 id="demo-case-09-heading">相对位置</h4></div><div aria-label="切换示例" class="demo-pagination"><button aria-label="上一个示例" class="demo-page-prev" type="button"><span aria-hidden="true" class="demo-chevron"></span></button><span aria-live="polite" class="demo-page-count">5 / 10</span><button aria-label="下一个示例" class="demo-page-next" type="button"><span aria-hidden="true" class="demo-chevron"></span></button></div></div><div aria-labelledby="demo-case-09-heading" class="demo-card-body" role="region" tabindex="0">
+<div class="case-capability"><div class="capability-heading"><span class="capability-label">展示能力</span><ul aria-label="展示能力" class="capability-tags"><li>场景结构理解</li><li>相对位置</li></ul></div><p>识别楼梯与门的位置，判断它们之间的空间关系。</p></div>
+<div class="demo-user-message">
+<p><strong>题目</strong></p><p>Where is the stairs relative to the doors?</p>
+<p><strong>选项</strong></p><p>A. The stairs are to the right of the doors.<br/>
+B. The stairs are to the left of the doors.<br/>
+C. The stairs are below the doors.</p>
+<div class="demo-media">
+<p><img alt="相对位置" decoding="async" loading="lazy" src="assets/demos/comparisons/case-09/image-01.png?v=236e9dd58517"/></p>
+</div></div>
+<div class="responses"><div aria-label="三个模型的原始回答" class="tabs response-tabs" role="tablist"><button aria-controls="demo-case-09-response-1" aria-selected="true" class="tab" id="demo-case-09-response-tab-1" role="tab" tabindex="0" type="button">ZDTaichu5.0-9B</button><button aria-controls="demo-case-09-response-2" aria-selected="false" class="tab" id="demo-case-09-response-tab-2" role="tab" tabindex="-1" type="button">Qwen3.5-9B</button><button aria-controls="demo-case-09-response-3" aria-selected="false" class="tab" id="demo-case-09-response-tab-3" role="tab" tabindex="-1" type="button">STEP3-VL-10B</button></div><div aria-labelledby="demo-case-09-response-tab-1" class="response-panel" id="demo-case-09-response-1" role="tabpanel">
+<p class="demo-assistant-name"><img alt="" height="28" src="web/taichu-logo.png?v=90da889f0994" width="28"/><span>ZDTaichu5.0-9B</span></p>
+<div class="demo-answer-content"><p>The correct answer is <strong>C. The stairs are below the doors.</strong></p>
+</div><details class="demo-raw-answer"><summary>查看原始回答</summary><pre><code class="language-text">
+The correct answer is **C. The stairs are below the doors.**
+</code></pre></details>
+</div><div aria-labelledby="demo-case-09-response-tab-2" class="response-panel" id="demo-case-09-response-2" role="tabpanel">
+<p class="demo-assistant-name"><span>Qwen3.5-9B</span></p>
+<div class="demo-answer-content"><p>B. The stairs are to the left of the doors.</p>
+</div><details class="demo-raw-answer"><summary>查看原始回答</summary><pre><code class="language-text">B. The stairs are to the left of the doors.
+</code></pre></details>
+</div><div aria-labelledby="demo-case-09-response-tab-3" class="response-panel" id="demo-case-09-response-3" role="tabpanel">
+<p class="demo-assistant-name"><span>STEP3-VL-10B</span></p>
+<div class="demo-answer-content"><p>To determine the position of the stairs relative to the doors, analyze the image:</p>
+<ul>
+<li>Locate the “VISITOR CENTER” entrance (the glass doors).</li>
+<li>Identify the stairs leading up to this entrance.</li>
+<li>Observe that the stairs are positioned to the <strong>left</strong> of the glass doors (when facing the doors from the lower level).</li>
+</ul>
+<p>Thus, the correct answer is <strong>B. The stairs are to the left of the doors.</strong></p>
+</div><details class="demo-raw-answer"><summary>查看原始回答</summary><pre><code class="language-text">To determine the position of the stairs relative to the doors, analyze the image:  
+
+- Locate the “VISITOR CENTER” entrance (the glass doors).  
+- Identify the stairs leading up to this entrance.  
+- Observe that the stairs are positioned to the **left** of the glass doors (when facing the doors from the lower level).    
+
+Thus, the correct answer is **B. The stairs are to the left of the doors.**
+</code></pre></details>
+</div></div><div class="demo-reference"><p><strong>标准答案</strong></p><p>C</p><details>
+<summary><strong>查看原始题目</strong></summary>
+<p><strong>题目</strong></p>
+<pre><code class="language-text">Where is the stairs relative to the doors?
+</code></pre>
+<p><strong>选项</strong></p>
+<pre><code class="language-text">A. The stairs are to the right of the doors.
+B. The stairs are to the left of the doors.
+C. The stairs are below the doors.
+</code></pre>
+<p><strong>标准答案</strong></p>
+<pre><code class="language-text">C
+</code></pre>
+</details><div aria-label="能力示例展示" class="table-scroll" role="region" tabindex="0"><table class="result-table">
+<thead>
+<tr>
+<th>模型</th>
+<th>回答</th>
+<th>判定</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ZDTaichu5.0-9B</td>
+<td>C. The stairs are below the doors.</td>
+<td>✓ 正确</td>
+</tr>
+<tr>
+<td>Qwen3.5-9B</td>
+<td>B. The stairs are to the left of the doors.</td>
+<td>✗ 错误</td>
+</tr>
+<tr>
+<td>STEP3-VL-10B</td>
+<td>B. The stairs are to the left of the doors.</td>
+<td>✗ 错误</td>
+</tr>
+</tbody>
+</table></div></div></div></article><article class="demo-card" data-demo-index="5" id="demo-case-10"><div class="demo-card-header"><div class="demo-caption"><span class="demo-label">示例</span><h4 id="demo-case-10-heading">多视角室内空间理解</h4></div><div aria-label="切换示例" class="demo-pagination"><button aria-label="上一个示例" class="demo-page-prev" type="button"><span aria-hidden="true" class="demo-chevron"></span></button><span aria-live="polite" class="demo-page-count">6 / 10</span><button aria-label="下一个示例" class="demo-page-next" type="button"><span aria-hidden="true" class="demo-chevron"></span></button></div></div><div aria-labelledby="demo-case-10-heading" class="demo-card-body" role="region" tabindex="0">
+<div class="case-capability"><div class="capability-heading"><span class="capability-label">展示能力</span><ul aria-label="展示能力" class="capability-tags"><li>多视角布局理解</li><li>方位推理</li></ul></div><p>关联不同视角的室内线索，根据给定北向确定目标区域所在角落。</p></div>
+<div class="demo-user-message">
+<p><strong>题目</strong></p><p>Assuming the fireplace area is on the north wall of the living room, in which corner of the room is the translucent lounge area in Figure 2?</p>
+<p><strong>选项</strong></p><p>A. Southeast<br/>
+B. Northeast<br/>
+C. Southwest<br/>
+D. Northwest</p>
+<div class="demo-media">
+<div class="demo-image-grid"><figure><button aria-label="放大：多视角室内空间理解 · 1/2" class="figure-button demo-image-button" type="button"><img alt="多视角室内空间理解 · 1/2" decoding="async" loading="lazy" src="assets/demos/comparisons/case-10/image-01.png?v=eda2a27642d1" width="100%"/></button><figcaption>1 / 2</figcaption></figure><figure><button aria-label="放大：多视角室内空间理解 · 2/2" class="figure-button demo-image-button" type="button"><img alt="多视角室内空间理解 · 2/2" decoding="async" loading="lazy" src="assets/demos/comparisons/case-10/image-02.png?v=cebc9d84ff03" width="100%"/></button><figcaption>2 / 2</figcaption></figure></div>
+</div></div>
+<div class="responses"><div aria-label="三个模型的原始回答" class="tabs response-tabs" role="tablist"><button aria-controls="demo-case-10-response-1" aria-selected="true" class="tab" id="demo-case-10-response-tab-1" role="tab" tabindex="0" type="button">ZDTaichu5.0-9B</button><button aria-controls="demo-case-10-response-2" aria-selected="false" class="tab" id="demo-case-10-response-tab-2" role="tab" tabindex="-1" type="button">Qwen3.5-9B</button><button aria-controls="demo-case-10-response-3" aria-selected="false" class="tab" id="demo-case-10-response-tab-3" role="tab" tabindex="-1" type="button">STEP3-VL-10B</button></div><div aria-labelledby="demo-case-10-response-tab-1" class="response-panel" id="demo-case-10-response-1" role="tabpanel">
+<p class="demo-assistant-name"><img alt="" height="28" src="web/taichu-logo.png?v=90da889f0994" width="28"/><span>ZDTaichu5.0-9B</span></p>
+<div class="demo-answer-content"><p>The fireplace is on the north wall. In Figure 2, the translucent lounge area (with the sofa and large window) is located to the left of the fireplace area when facing the north wall, placing it on the west side of the room. Since it is away from the north wall (toward the south), it resides in the southwest corner.</p>
+<p>C</p>
+</div><details class="demo-raw-answer"><summary>查看原始回答</summary><pre><code class="language-text">
+The fireplace is on the north wall. In Figure 2, the translucent lounge area (with the sofa and large window) is located to the left of the fireplace area when facing the north wall, placing it on the west side of the room. Since it is away from the north wall (toward the south), it resides in the southwest corner.
+
+C
+</code></pre></details>
+</div><div aria-labelledby="demo-case-10-response-tab-2" class="response-panel" id="demo-case-10-response-2" role="tabpanel">
+<p class="demo-assistant-name"><span>Qwen3.5-9B</span></p>
+<div class="demo-answer-content"><p>The fireplace is on the north wall (as stated). In Figure 1, looking towards the fireplace (North), the television cabinet is on the left (West) and the doorway is on the right (East).<br/>
+In Figure 2, the orientation of the ceiling beams (running horizontally across the frame) is consistent with Figure 1, suggesting the camera is facing the same direction (North).<br/>
+In Figure 2, the lounge area with the white sofa and floral curtains is visible in the background, towards the right side of the image. Since the camera is facing North, "background" is South and "right" is East. Therefore, the lounge area is in the Southeast corner of the room.</p>
+<p>Answer: A</p>
+</div><details class="demo-raw-answer"><summary>查看原始回答</summary><pre><code class="language-text">
+
+The fireplace is on the north wall (as stated). In Figure 1, looking towards the fireplace (North), the television cabinet is on the left (West) and the doorway is on the right (East).
+In Figure 2, the orientation of the ceiling beams (running horizontally across the frame) is consistent with Figure 1, suggesting the camera is facing the same direction (North).
+In Figure 2, the lounge area with the white sofa and floral curtains is visible in the background, towards the right side of the image. Since the camera is facing North, "background" is South and "right" is East. Therefore, the lounge area is in the Southeast corner of the room.
+
+Answer: A
+</code></pre></details>
+</div><div aria-labelledby="demo-case-10-response-tab-3" class="response-panel" id="demo-case-10-response-3" role="tabpanel">
+<p class="demo-assistant-name"><span>STEP3-VL-10B</span></p>
+<div class="demo-answer-content"><p>A</p>
+</div><details class="demo-raw-answer"><summary>查看原始回答</summary><pre><code class="language-text">
+A
+</code></pre></details>
+</div></div><div class="demo-reference"><p><strong>标准答案</strong></p><p>C</p><details>
+<summary><strong>查看原始题目</strong></summary>
+<p><strong>题目</strong></p>
+<pre><code class="language-text">Assuming the fireplace area is on the north wall of the living room, in which corner of the room is the translucent lounge area in Figure 2?
+</code></pre>
+<p><strong>选项</strong></p>
+<pre><code class="language-text">A. Southeast
+B. Northeast
+C. Southwest
+D. Northwest
+</code></pre>
+<p><strong>标准答案</strong></p>
+<pre><code class="language-text">C
+</code></pre>
+</details><div aria-label="能力示例展示" class="table-scroll" role="region" tabindex="0"><table class="result-table">
+<thead>
+<tr>
+<th>模型</th>
+<th>回答</th>
+<th>判定</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ZDTaichu5.0-9B</td>
+<td>C. Southwest</td>
+<td>✓ 正确</td>
+</tr>
+<tr>
+<td>Qwen3.5-9B</td>
+<td>A. Southeast</td>
+<td>✗ 错误</td>
+</tr>
+<tr>
+<td>STEP3-VL-10B</td>
+<td>A. Southeast</td>
+<td>✗ 错误</td>
+</tr>
+</tbody>
+</table></div></div></div></article><article class="demo-card" data-demo-index="6" id="demo-case-11"><div class="demo-card-header"><div class="demo-caption"><span class="demo-label">示例</span><h4 id="demo-case-11-heading">截面推理</h4></div><div aria-label="切换示例" class="demo-pagination"><button aria-label="上一个示例" class="demo-page-prev" type="button"><span aria-hidden="true" class="demo-chevron"></span></button><span aria-live="polite" class="demo-page-count">7 / 10</span><button aria-label="下一个示例" class="demo-page-next" type="button"><span aria-hidden="true" class="demo-chevron"></span></button></div></div><div aria-labelledby="demo-case-11-heading" class="demo-card-body" role="region" tabindex="0">
+<div class="case-capability"><div class="capability-heading"><span class="capability-label">展示能力</span><ul aria-label="展示能力" class="capability-tags"><li>三维形状理解</li><li>截面推理</li></ul></div><p>综合组合体的不同视角，判断不可能出现的截面形状。</p></div>
+<div class="demo-user-message">
+<p><strong>题目</strong></p><p>The top row shows the combined shape viewed from two different angles. The shape consists of a triangular frustum on top of a circular frustum. Which of the following images cannot be a cross-section of the shape? Please answer from options A, B, C, or D.</p>
+<p><strong>选项</strong></p><p>A. A<br/>
+B. B<br/>
+C. C<br/>
+D. D</p>
+<div class="demo-media">
+<p><img alt="截面推理" decoding="async" loading="lazy" src="assets/demos/comparisons/case-11/image-01.png?v=24eb090e71ca"/></p>
+</div></div>
+<div class="responses"><div aria-label="三个模型的原始回答" class="tabs response-tabs" role="tablist"><button aria-controls="demo-case-11-response-1" aria-selected="true" class="tab" id="demo-case-11-response-tab-1" role="tab" tabindex="0" type="button">ZDTaichu5.0-9B</button><button aria-controls="demo-case-11-response-2" aria-selected="false" class="tab" id="demo-case-11-response-tab-2" role="tab" tabindex="-1" type="button">Qwen3.5-9B</button><button aria-controls="demo-case-11-response-3" aria-selected="false" class="tab" id="demo-case-11-response-tab-3" role="tab" tabindex="-1" type="button">STEP3-VL-10B</button></div><div aria-labelledby="demo-case-11-response-tab-1" class="response-panel" id="demo-case-11-response-1" role="tabpanel">
+<p class="demo-assistant-name"><img alt="" height="28" src="web/taichu-logo.png?v=90da889f0994" width="28"/><span>ZDTaichu5.0-9B</span></p>
+<div class="demo-answer-content"><p>The shape consists of a triangular frustum on top of a circular frustum. A cross-section is a single planar cut. Option A shows two separate trapezoids, which cannot result from a single planar cut through the connected shape. The other options correspond to valid cross-sections: B (circle from horizontal cut of bottom part), C (vertical cut through both parts), and D (horizontal cut of top part).</p>
+<p>A</p>
+</div><details class="demo-raw-answer"><summary>查看原始回答</summary><pre><code class="language-text">
+The shape consists of a triangular frustum on top of a circular frustum. A cross-section is a single planar cut. Option A shows two separate trapezoids, which cannot result from a single planar cut through the connected shape. The other options correspond to valid cross-sections: B (circle from horizontal cut of bottom part), C (vertical cut through both parts), and D (horizontal cut of top part).
+
+A
+</code></pre></details>
+</div><div aria-labelledby="demo-case-11-response-tab-2" class="response-panel" id="demo-case-11-response-2" role="tabpanel">
+<p class="demo-assistant-name"><span>Qwen3.5-9B</span></p>
+<div class="demo-answer-content"><p>The shape consists of a circular frustum at the bottom and a triangular frustum (likely a frustum of a triangular pyramid) on top.</p>
+<ul>
+<li><strong>Option A:</strong> This shows a vertical cross-section. A vertical plane passing through the central axis of both shapes would intersect the circular frustum in a large isosceles trapezoid and the triangular frustum in a smaller isosceles trapezoid centered on top of it. This matches the shape in A.</li>
+<li><strong>Option B:</strong> This shows a circle. A horizontal plane cutting through the bottom circular frustum (below the junction with the top part) would produce a circle (or an annulus, which is a filled ring shape, often represented as a circle in 2D cross-sections if the thickness isn't emphasized). Even if it's just the top surface, it's a circle. This is a possible cross-section.</li>
+<li><strong>Option C:</strong> This shows a vertical cross-section where the top part is a thin trapezoid and the bottom is a wider trapezoid. This could occur if the vertical cut passes through the central axis of the bottom circular frustum (producing the wide trapezoid) but is offset from the central axis of the top triangular frustum (cutting through the side, producing a thin trapezoid). This is geometrically possible if the two parts are not perfectly aligned or if the cut is taken at a specific angle/position.</li>
+<li><strong>Option D:</strong> This shows a single trapezoid. For a vertical cross-section to produce only a single trapezoid, the plane would have to intersect the bottom part in a trapezoid and <em>not</em> intersect the top part in any 2D area (i.e., intersect it only at a line or point), or the top part would have to be non-existent. However, since the top part is stacked on the bottom part, any vertical plane that cuts through the bottom part (to get a trapezoid) must also pass through the top part (unless it's a tangent plane, which is a degenerate case and unlikely to produce the clean shape D). More simply, a horizontal cut produces a circle, and a slanted cut produces curved sides. A vertical cut produces a composite shape (top on bottom). Option D represents a single shape without the "stacked" appearance, which is impossible for a cross-section of this combined solid.</li>
+</ul>
+<p>Therefore, D cannot be a cross-section.</p>
+<p>&lt;answer&gt;D&lt;/answer&gt;</p>
+</div><details class="demo-raw-answer"><summary>查看原始回答</summary><pre><code class="language-text">
+
+The shape consists of a circular frustum at the bottom and a triangular frustum (likely a frustum of a triangular pyramid) on top.
+
+*   **Option A:** This shows a vertical cross-section. A vertical plane passing through the central axis of both shapes would intersect the circular frustum in a large isosceles trapezoid and the triangular frustum in a smaller isosceles trapezoid centered on top of it. This matches the shape in A.
+*   **Option B:** This shows a circle. A horizontal plane cutting through the bottom circular frustum (below the junction with the top part) would produce a circle (or an annulus, which is a filled ring shape, often represented as a circle in 2D cross-sections if the thickness isn't emphasized). Even if it's just the top surface, it's a circle. This is a possible cross-section.
+*   **Option C:** This shows a vertical cross-section where the top part is a thin trapezoid and the bottom is a wider trapezoid. This could occur if the vertical cut passes through the central axis of the bottom circular frustum (producing the wide trapezoid) but is offset from the central axis of the top triangular frustum (cutting through the side, producing a thin trapezoid). This is geometrically possible if the two parts are not perfectly aligned or if the cut is taken at a specific angle/position.
+*   **Option D:** This shows a single trapezoid. For a vertical cross-section to produce only a single trapezoid, the plane would have to intersect the bottom part in a trapezoid and *not* intersect the top part in any 2D area (i.e., intersect it only at a line or point), or the top part would have to be non-existent. However, since the top part is stacked on the bottom part, any vertical plane that cuts through the bottom part (to get a trapezoid) must also pass through the top part (unless it's a tangent plane, which is a degenerate case and unlikely to produce the clean shape D). More simply, a horizontal cut produces a circle, and a slanted cut produces curved sides. A vertical cut produces a composite shape (top on bottom). Option D represents a single shape without the "stacked" appearance, which is impossible for a cross-section of this combined solid.
+
+Therefore, D cannot be a cross-section.
+
+&lt;answer&gt;D&lt;/answer&gt;
+</code></pre></details>
+</div><div aria-labelledby="demo-case-11-response-tab-3" class="response-panel" id="demo-case-11-response-3" role="tabpanel">
+<p class="demo-assistant-name"><span>STEP3-VL-10B</span></p>
+<div class="demo-answer-content"><p>&lt;answer&gt;C&lt;/answer&gt;</p>
+</div><details class="demo-raw-answer"><summary>查看原始回答</summary><pre><code class="language-text">
+&lt;answer&gt;C&lt;/answer&gt;
+</code></pre></details>
+</div></div><div class="demo-reference"><p><strong>标准答案</strong></p><p>A</p><details>
+<summary><strong>查看原始题目</strong></summary>
+<p><strong>题目</strong></p>
+<pre><code class="language-text">The top row shows the combined shape viewed from two different angles. The shape consists of a triangular frustum on top of a circular frustum. Which of the following images cannot be a cross-section of the shape? Please answer from options A, B, C, or D.
+</code></pre>
+<p><strong>选项</strong></p>
+<pre><code class="language-text">A. A
+B. B
+C. C
+D. D
+</code></pre>
+<p><strong>标准答案</strong></p>
+<pre><code class="language-text">A
+</code></pre>
+</details><div aria-label="能力示例展示" class="table-scroll" role="region" tabindex="0"><table class="result-table">
+<thead>
+<tr>
+<th>模型</th>
+<th>回答</th>
+<th>判定</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ZDTaichu5.0-9B</td>
+<td>A. A</td>
+<td>✓ 正确</td>
+</tr>
+<tr>
+<td>Qwen3.5-9B</td>
+<td>D. D</td>
+<td>✗ 错误</td>
+</tr>
+<tr>
+<td>STEP3-VL-10B</td>
+<td>C. C</td>
+<td>✗ 错误</td>
+</tr>
+</tbody>
+</table></div></div></div></article><article class="demo-card" data-demo-index="7" id="demo-case-12"><div class="demo-card-header"><div class="demo-caption"><span class="demo-label">示例</span><h4 id="demo-case-12-heading">跨视角相机运动</h4></div><div aria-label="切换示例" class="demo-pagination"><button aria-label="上一个示例" class="demo-page-prev" type="button"><span aria-hidden="true" class="demo-chevron"></span></button><span aria-live="polite" class="demo-page-count">8 / 10</span><button aria-label="下一个示例" class="demo-page-next" type="button"><span aria-hidden="true" class="demo-chevron"></span></button></div></div><div aria-labelledby="demo-case-12-heading" class="demo-card-body" role="region" tabindex="0">
+<div class="case-capability"><div class="capability-heading"><span class="capability-label">展示能力</span><ul aria-label="展示能力" class="capability-tags"><li>跨视角匹配</li><li>相机运动推断</li></ul></div><p>比较同一场景的两幅画面，推断观察者的移动方向。</p></div>
+<div class="demo-user-message">
+<p><strong>题目</strong></p><p>&lt;image&gt;&lt;image&gt;<br/>
+Based on these two views showing the same scene: in which direction did I move from the first view to the second view? A. Diagonally forward and left B. Directly right C. Diagonally forward and right D. Directly left</p>
+<p><strong>选项</strong></p><p>A. Diagonally forward and left<br/>
+B. Directly right<br/>
+C. Diagonally forward and right<br/>
+D. Directly left</p>
+<div class="demo-media">
+<div class="demo-image-grid"><figure><button aria-label="放大：跨视角相机运动 · 1/2" class="figure-button demo-image-button" type="button"><img alt="跨视角相机运动 · 1/2" decoding="async" loading="lazy" src="assets/demos/comparisons/case-12/image-01.png?v=f7330e9ce73b" width="100%"/></button><figcaption>1 / 2</figcaption></figure><figure><button aria-label="放大：跨视角相机运动 · 2/2" class="figure-button demo-image-button" type="button"><img alt="跨视角相机运动 · 2/2" decoding="async" loading="lazy" src="assets/demos/comparisons/case-12/image-02.png?v=f66d69d4c025" width="100%"/></button><figcaption>2 / 2</figcaption></figure></div>
+</div></div>
+<div class="responses"><div aria-label="三个模型的原始回答" class="tabs response-tabs" role="tablist"><button aria-controls="demo-case-12-response-1" aria-selected="true" class="tab" id="demo-case-12-response-tab-1" role="tab" tabindex="0" type="button">ZDTaichu5.0-9B</button><button aria-controls="demo-case-12-response-2" aria-selected="false" class="tab" id="demo-case-12-response-tab-2" role="tab" tabindex="-1" type="button">Qwen3.5-9B</button><button aria-controls="demo-case-12-response-3" aria-selected="false" class="tab" id="demo-case-12-response-tab-3" role="tab" tabindex="-1" type="button">STEP3-VL-10B</button></div><div aria-labelledby="demo-case-12-response-tab-1" class="response-panel" id="demo-case-12-response-1" role="tabpanel">
+<p class="demo-assistant-name"><img alt="" height="28" src="web/taichu-logo.png?v=90da889f0994" width="28"/><span>ZDTaichu5.0-9B</span></p>
+<div class="demo-answer-content"><p>The first image shows a blue trash bin on the left side and a black mesh chair in the center. In the second image, the trash bin is no longer visible, and the view has shifted to show more of the area to the right (including a white cabinet and another chair). The black mesh chair appears closer and slightly more to the right in the frame, indicating the camera moved forward and to the left relative to the scene.</p>
+<p>A</p>
+</div><details class="demo-raw-answer"><summary>查看原始回答</summary><pre><code class="language-text">
+The first image shows a blue trash bin on the left side and a black mesh chair in the center. In the second image, the trash bin is no longer visible, and the view has shifted to show more of the area to the right (including a white cabinet and another chair). The black mesh chair appears closer and slightly more to the right in the frame, indicating the camera moved forward and to the left relative to the scene.
+
+A
+</code></pre></details>
+</div><div aria-labelledby="demo-case-12-response-tab-2" class="response-panel" id="demo-case-12-response-2" role="tabpanel">
+<p class="demo-assistant-name"><span>Qwen3.5-9B</span></p>
+<div class="demo-answer-content"><p>&lt;answer&gt;C. Diagonally forward and right&lt;/answer&gt;</p>
+</div><details class="demo-raw-answer"><summary>查看原始回答</summary><pre><code class="language-text">
+
+&lt;answer&gt;C. Diagonally forward and right&lt;/answer&gt;
+</code></pre></details>
+</div><div aria-labelledby="demo-case-12-response-tab-3" class="response-panel" id="demo-case-12-response-3" role="tabpanel">
+<p class="demo-assistant-name"><span>STEP3-VL-10B</span></p>
+<div class="demo-answer-content"><p>To determine the movement direction, analyze key elements:</p>
+<ol>
+<li><strong>Central Chair Orientation</strong>: In the first image, the chair is viewed from the front. In the second image, the chair is viewed from its right side (the backrest faces left in the second image, meaning the camera is positioned to the chair’s right).</li>
+<li><strong>Patterned Chair Position</strong>: In the first image, the patterned chair is <em>behind and to the right</em> of the central chair. In the second image, the patterned chair appears <em>behind and to the left</em> of the central chair. For the patterned chair to shift from the right of the central chair (first image) to the left (second image), the camera must move <strong>to the right</strong> of the central chair.</li>
+<li><strong>Background and Distance</strong>: The white filing cabinet (partially visible on the right in the first image) is fully visible on the right in the second image, indicating the camera moved <em>forward</em> toward that cabinet while shifting right.</li>
+</ol>
+<p>Combining these, the movement is <strong>diagonally forward and right</strong>.</p>
+<p>&lt;answer&gt;C. Diagonally forward and right&lt;/answer&gt;</p>
+</div><details class="demo-raw-answer"><summary>查看原始回答</summary><pre><code class="language-text">
+To determine the movement direction, analyze key elements:  
+
+1. **Central Chair Orientation**: In the first image, the chair is viewed from the front. In the second image, the chair is viewed from its right side (the backrest faces left in the second image, meaning the camera is positioned to the chair’s right).  
+2. **Patterned Chair Position**: In the first image, the patterned chair is *behind and to the right* of the central chair. In the second image, the patterned chair appears *behind and to the left* of the central chair. For the patterned chair to shift from the right of the central chair (first image) to the left (second image), the camera must move **to the right** of the central chair.  
+3. **Background and Distance**: The white filing cabinet (partially visible on the right in the first image) is fully visible on the right in the second image, indicating the camera moved *forward* toward that cabinet while shifting right.  
+
+Combining these, the movement is **diagonally forward and right**.  
+
+
+&lt;answer&gt;C. Diagonally forward and right&lt;/answer&gt;
+</code></pre></details>
+</div></div><div class="demo-reference"><p><strong>标准答案</strong></p><p>A</p><details>
+<summary><strong>查看原始题目</strong></summary>
+<p><strong>题目</strong></p>
+<pre><code class="language-text">&lt;image&gt;&lt;image&gt;
+Based on these two views showing the same scene: in which direction did I move from the first view to the second view? A. Diagonally forward and left B. Directly right C. Diagonally forward and right D. Directly left
+</code></pre>
+<p><strong>选项</strong></p>
+<pre><code class="language-text">A. Diagonally forward and left
+B. Directly right
+C. Diagonally forward and right
+D. Directly left
+</code></pre>
+<p><strong>标准答案</strong></p>
+<pre><code class="language-text">A
+</code></pre>
+</details><div aria-label="能力示例展示" class="table-scroll" role="region" tabindex="0"><table class="result-table">
+<thead>
+<tr>
+<th>模型</th>
+<th>回答</th>
+<th>判定</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ZDTaichu5.0-9B</td>
+<td>A. Diagonally forward and left</td>
+<td>✓ 正确</td>
+</tr>
+<tr>
+<td>Qwen3.5-9B</td>
+<td>C. Diagonally forward and right</td>
+<td>✗ 错误</td>
+</tr>
+<tr>
+<td>STEP3-VL-10B</td>
+<td>C. Diagonally forward and right</td>
+<td>✗ 错误</td>
+</tr>
+</tbody>
+</table></div></div></div></article><article class="demo-card" data-demo-index="8" id="demo-case-13"><div class="demo-card-header"><div class="demo-caption"><span class="demo-label">示例</span><h4 id="demo-case-13-heading">立方体展开与心智折叠</h4></div><div aria-label="切换示例" class="demo-pagination"><button aria-label="上一个示例" class="demo-page-prev" type="button"><span aria-hidden="true" class="demo-chevron"></span></button><span aria-live="polite" class="demo-page-count">9 / 10</span><button aria-label="下一个示例" class="demo-page-next" type="button"><span aria-hidden="true" class="demo-chevron"></span></button></div></div><div aria-labelledby="demo-case-13-heading" class="demo-card-body" role="region" tabindex="0">
+<div class="case-capability"><div class="capability-heading"><span class="capability-label">展示能力</span><ul aria-label="展示能力" class="capability-tags"><li>心理折叠</li><li>三维邻接关系</li></ul></div><p>将二维展开图在脑中折成立方体，判断可同时看见的相邻面。</p></div>
+<div class="demo-user-message">
+<p><strong>题目</strong></p><p>The left image shows the net (unfolded pattern) of a cube, with six faces colored in different colors. The net is folded upward to form a cube. From an axonometric (3D) viewing angle of the cube, which combination of adjacent colors is possible to see? Please answer from options A, B, C, or D.</p>
+<p><strong>选项</strong></p><p>A. A<br/>
+B. B<br/>
+C. C<br/>
+D. All three other options are incorrect</p>
+<div class="demo-media">
+<p><img alt="立方体展开与心智折叠" decoding="async" loading="lazy" src="assets/demos/comparisons/case-13/image-01.png?v=9d0e2c4883ee"/></p>
+</div></div>
+<div class="responses"><div aria-label="三个模型的原始回答" class="tabs response-tabs" role="tablist"><button aria-controls="demo-case-13-response-1" aria-selected="true" class="tab" id="demo-case-13-response-tab-1" role="tab" tabindex="0" type="button">ZDTaichu5.0-9B</button><button aria-controls="demo-case-13-response-2" aria-selected="false" class="tab" id="demo-case-13-response-tab-2" role="tab" tabindex="-1" type="button">Qwen3.5-9B</button><button aria-controls="demo-case-13-response-3" aria-selected="false" class="tab" id="demo-case-13-response-tab-3" role="tab" tabindex="-1" type="button">STEP3-VL-10B</button></div><div aria-labelledby="demo-case-13-response-tab-1" class="response-panel" id="demo-case-13-response-1" role="tabpanel">
+<p class="demo-assistant-name"><img alt="" height="28" src="web/taichu-logo.png?v=90da889f0994" width="28"/><span>ZDTaichu5.0-9B</span></p>
+<div class="demo-answer-content"><p>The net folds to form a cube where the Green face is the bottom. If we rotate the cube to place the Green face on top, the Yellow face becomes the front, and the Blue face becomes the right side. This arrangement matches Option C.</p>
+<p>C</p>
+</div><details class="demo-raw-answer"><summary>查看原始回答</summary><pre><code class="language-text">
+The net folds to form a cube where the Green face is the bottom. If we rotate the cube to place the Green face on top, the Yellow face becomes the front, and the Blue face becomes the right side. This arrangement matches Option C.
+
+C
+</code></pre></details>
+</div><div aria-labelledby="demo-case-13-response-tab-2" class="response-panel" id="demo-case-13-response-2" role="tabpanel">
+<p class="demo-assistant-name"><span>Qwen3.5-9B</span></p>
+<div class="demo-answer-content"><p>The net can be folded into a cube as follows:</p>
+<ol>
+<li>
+<p>Let the <strong>Teal</strong> square be the <strong>Front</strong> face (or Base, depending on perspective). Let's use the Base perspective derived above which was consistent.</p>
+</li>
+<li>
+<p><strong>Teal</strong> is the <strong>Bottom</strong> face.</p>
+</li>
+<li>
+<p><strong>Yellow</strong> is attached to the left of Teal, so it folds up to be the <strong>Left</strong> face.</p>
+</li>
+<li>
+<p><strong>Purple</strong> is attached to the top of Yellow. If Yellow is Left, Purple folds to be the <strong>Top</strong> face.</p>
+</li>
+<li>
+<p><strong>Blue</strong> is attached to the bottom of Yellow (in the net layout, it's to the left/bottom). If Yellow is Left, Blue folds to be the <strong>Front</strong> face. (Wait, let's re-verify Blue).</p>
+<ul>
+<li>In the net: Purple (top), Yellow (mid), Blue (bottom). Vertical strip.</li>
+<li>If Yellow is Left.</li>
+<li>Purple is Top.</li>
+<li>Blue is Bottom? No, Bottom of Left is Bottom of Cube?</li>
+<li>If Yellow is Left (side), Top is Purple. Bottom is... Bottom of Cube?</li>
+<li>If Purple is Top and Yellow is Left, they share an edge.</li>
+<li>Blue is attached to the edge of Yellow opposite to Purple.</li>
+<li>So Blue is Bottom.</li>
+<li>So <strong>Purple (Top) and Blue (Bottom) are opposite</strong>.</li>
+</ul>
+<p>Let's re-evaluate the opposites with this strip (P-Y-B).</p>
+<ul>
+<li>If P and B are opposite.</li>
+<li>And T is attached to Y (Left).</li>
+<li>If Y is Left, T is attached to the front edge of Left? Or back?</li>
+<li>In the net, T is to the right of Y.</li>
+<li>If Y is Left, T is Front.</li>
+<li>R is attached to T (Front). So R is Right.</li>
+<li>G is attached to R (Right). So G is Back.</li>
+</ul>
+<p>So the faces are:</p>
+<ul>
+<li>Top: Purple.</li>
+<li>Bottom: Blue.</li>
+<li>Left: Yellow.</li>
+<li>Front: Teal.</li>
+<li>Right: Red.</li>
+<li>Back: Green.</li>
+</ul>
+<p>Opposites:</p>
+<ul>
+<li>Top (Purple) - Bottom (Blue). <strong>(P, B)</strong></li>
+<li>Left (Yellow) - Right (Red). <strong>(Y, R)</strong></li>
+<li>Front (Teal) - Back (Green). <strong>(T, G)</strong></li>
+</ul>
+<p>Now check the options:</p>
+<ul>
+<li>
+<p><strong>Option A</strong>: Green, Yellow, Purple.</p>
+<ul>
+<li>Green (Back).</li>
+<li>Yellow (Left).</li>
+<li>Purple (Top).</li>
+<li>Are they adjacent?</li>
+<li>Back/Left: Yes.</li>
+<li>Back/Top: Yes.</li>
+<li>Left/Top: Yes.</li>
+<li>This combination is valid.</li>
+</ul>
+</li>
+<li>
+<p><strong>Option B</strong>: Red, Teal, Purple.</p>
+<ul>
+<li>Red (Right).</li>
+<li>Teal (Front).</li>
+<li>Purple (Top).</li>
+<li>Are they adjacent?</li>
+<li>Right/Front: Yes.</li>
+<li>Right/Top: Yes.</li>
+<li>Front/Top: Yes.</li>
+<li>This combination is valid.</li>
+<li>Wait, my previous analysis said (T, P) were opposite. Here (T, G) are opposite. So T and P are adjacent.</li>
+<li>So B is valid.</li>
+</ul>
+</li>
+<li>
+<p><strong>Option C</strong>: Green, Yellow, Blue.</p>
+<ul>
+<li>Green (Back).</li>
+<li>Yellow (Left).</li>
+<li>Blue (Bottom).</li>
+<li>Are they adjacent?</li>
+<li>Back/Left: Yes.</li>
+<li>Back/Bottom: Yes.</li>
+<li>Left/Bottom: Yes.</li>
+<li>This combination is valid.</li>
+</ul>
+</li>
+</ul>
+<p>This is confusing. All seem valid.<br/>
+Let's look at <strong>Option B</strong> again.</p>
+<ul>
+<li>Faces: Red, Teal, Purple.</li>
+<li>In the model: Red (Right), Teal (Front), Purple (Top).</li>
+<li>This is a valid corner (Top-Front-Right).</li>
+</ul>
+<p>Let's look at <strong>Option C</strong> again.</p>
+<ul>
+<li>Faces: Green, Yellow, Blue.</li>
+<li>In the model: Green (Back), Yellow (Left), Blue (Bottom).</li>
+<li>This is a valid corner (Bottom-Left-Back).</li>
+</ul>
+<p>Is there an orientation issue?</p>
+<ul>
+<li>In Option B, Red is Top, Teal is Right, Purple is Left.</li>
+<li>In my model: Red (Right), Teal (Front), Purple (Top).</li>
+<li>If I rotate to match Option B:
+<ul>
+<li>Put Red (Right) on Top.</li>
+<li>Put Teal (Front) on Right.</li>
+<li>Then Purple (Top) must be on Left?</li>
+<li>Rotate 90 deg around the vertical axis? No.</li>
+<li>Axis along the edge Red-Teal (Right-Front).</li>
+<li>Rotate Top (Purple) to Left?</li>
+<li>Yes.</li>
+<li>So Option B is valid.</li>
+</ul>
+</li>
+</ul>
+<p>Is there an issue with <strong>Option A</strong>?</p>
+<ul>
+<li>Green (Back), Yellow (Left), Purple (Top).</li>
+<li>Option A shows Green (Top), Yellow (Left), Purple (Right).</li>
+<li>In model: Green (Back), Yellow (Left), Purple (Top).</li>
+<li>Rotate so Green (Back) becomes Top.</li>
+<li>Rotate Front face to Bottom? No.</li>
+<li>Rotate around Right edge (Red-Green edge).</li>
+<li>Back (Green) -&gt; Top.</li>
+<li>Top (Purple) -&gt; Front.</li>
+<li>Front (Teal) -&gt; Left.</li>
+<li>Left (Yellow) -&gt; Bottom.</li>
+<li>This doesn't match Option A (Yellow Left, Purple Right).</li>
+</ul>
+<p>Let's try to match Option A: Top=Green, Left=Yellow, Right=Purple.</p>
+<ul>
+<li>This requires Green adjacent to Yellow and Purple.</li>
+<li>Yellow adjacent to Purple.</li>
+<li>In my model:
+<ul>
+<li>Green (Back) adjacent to Yellow (Left)? Yes.</li>
+<li>Green (Back) adjacent to Purple (Top)? Yes.</li>
+<li>Yellow (Left) adjacent to Purple (Top)? Yes.</li>
+</ul>
+</li>
+<li>So the faces are correct.</li>
+<li>Now orientation.</li>
+<li>In Option A, Yellow and Purple are side-by-side (Left and Right).</li>
+<li>In my model, Yellow (Left) and Purple (Top) share a horizontal edge.</li>
+<li>But they also share a corner.</li>
+<li>In Option A, they share a vertical edge.</li>
+<li>This implies a rotation.</li>
+<li>If I rotate the model so Purple (Top) becomes Right.</li>
+<li>And Green (Back) becomes Top.</li>
+<li>And Yellow (Left) becomes Left.</li>
+<li>Rotate 90 deg around the Left edge (Yellow-Green? No. Yellow is Left, Green is Back. Shared edge is Left-Back).</li>
+<li>Rotate around Left-Back edge.</li>
+<li>Top (Purple) -&gt; Right.</li>
+<li>Back (Green) -&gt; Top.</li>
+<li>Left (Yellow) -&gt; Left.</li>
+<li>Front (Teal) -&gt; Bottom.</li>
+<li>Right (Red) -&gt; Front.</li>
+<li>Bottom (Blue) -&gt; Back.</li>
+<li>So visible faces: Top (Green), Left (Yellow), Right (Purple).</li>
+<li>This matches Option A exactly!</li>
+</ul>
+<p>So <strong>Option A is correct</strong>.</p>
+<p>Why did I think B and C were valid?</p>
+<ul>
+<li>Let's re-check B.</li>
+<li>Option B: Top=Red, Right=Teal, Left=Purple.</li>
+<li>In my model: Red (Right), Teal (Front), Purple (Top).</li>
+<li>Can I rotate to match?</li>
+<li>Need Red on Top. (Rotate Up/Right).</li>
+<li>Need Teal on Right.</li>
+<li>Need Purple on Left.</li>
+<li>In model, Purple is Top. Red is Right. Teal is Front.</li>
+<li>Purple and Red are adjacent (Top-Right).</li>
+<li>Purple and Teal are adjacent (Top-Front).</li>
+<li>Red and Teal are adjacent (Right-Front).</li>
+<li>So they form a corner.</li>
+<li>In Option B, they form a corner (Top-Right-Left? No, Top-Right-Left is impossible. Left and Right are opposite).</li>
+<li><strong>WAIT</strong>. In Option B, the faces are arranged: Top (Red), Right (Teal), Left/Bottom (Purple).</li>
+<li>The visible faces are Top, Right, and... the face on the bottom-left.</li>
+<li>Usually, this shows Top, Front-Left, Front-Right.</li>
+<li>So the faces are Top (Red), Left (Purple), Right (Teal).</li>
+<li>But Left and Right are opposite faces. They cannot be seen together.</li>
+<li>Therefore, <strong>Option B is impossible</strong>.</li>
+</ul>
+<p>Let's re-examine Option C.</p>
+<ul>
+<li>Top: Green.</li>
+<li>Left: Yellow.</li>
+<li>Right: Blue.</li>
+<li>Left and Right are opposite.</li>
+<li>In my model, Yellow (Left) and Blue (Bottom) are adjacent.</li>
+<li>But in Option C, they are drawn as Left and Right faces (side-by-side).</li>
+<li>This implies they are opposite? No, adjacent side faces are Left and Right only if it's a 2-face view?</li>
+<li>No, in a standard isometric view, you see Top, Front-Left, Front-Right.</li>
+<li>So the faces are Top (Green), Front-Left (Yellow), Front-Right (Blue).</li>
+<li>So Yellow and Blue are adjacent.</li>
+<li>In my model, Yellow (Left) and Blue (Bottom) are adjacent.</li>
+<li>So this is possible orientation-wise.</li>
+<li>BUT, check Green.</li>
+<li>In Option C, Green is Top.</li>
+<li>In my model, Green is Back.</li>
+<li>Is Green adjacent to Yellow (Left) and Blue (Bottom)?</li>
+<li>Back/Left: Yes.</li>
+<li>Back/Bottom: Yes.</li>
+<li>So C is possible.</li>
+</ul>
+<p>Wait, let's look at <strong>Option B</strong> again.</p>
+<ul>
+<li>Faces: Red, Teal, Purple.</li>
+<li>In Option B image:
+<ul>
+<li>Top face: Red.</li>
+<li>Right face: Teal.</li>
+<li>Left face: Purple.</li>
+</ul>
+</li>
+<li>Left and Right are opposite.</li>
+<li>So you cannot see Purple and Teal (if they are Left and Right) together?</li>
+<li>No, in the image, Purple is the bottom-left face. It's not the "Left" face in the cube frame, it's the Front-Left face.</li>
+<li>So the faces are Top (Red), Front-Right (Teal), Front-Left (Purple).</li>
+<li>So Purple and Teal are adjacent.</li>
+<li>In my model: Purple (Top), Teal (Front). Adjacent.</li>
+<li>Purple and Red (Right). Adjacent.</li>
+<li>Teal and Red (Front/Right). Adjacent.</li>
+<li>So B is possible.</li>
+</ul>
+<p>This is really tricky.<br/>
+Let's look at the <strong>Net</strong> one last time.</p>
+<ul>
+<li>
+<p>Maybe <strong>Yellow</strong> and <strong>Blue</strong> are opposite?</p>
+</li>
+<li>
+<p>Strip: Purple - Yellow - Blue.</p>
+</li>
+<li>
+<p>If this is a straight line, P and B are opposite.</p>
+</li>
+<li>
+<p>In my model, P (Top) and B (Bottom) are opposite. Correct.</p>
+</li>
+<li>
+<p>Maybe <strong>Teal</strong> and <strong>Green</strong> are opposite?</p>
+</li>
+<li>
+<p>Strip: Teal - Red - Green.</p>
+</li>
+<li>
+<p>If this is a straight line, T and G are opposite.</p>
+</li>
+<li>
+<p>In my model, T (Front) and G (Back) are opposite. Correct.</p>
+</li>
+<li>
+<p>Maybe <strong>Yellow</strong> and <strong>Red</strong> are opposite?</p>
+</li>
+<li>
+<p>Remaining pair.</p>
+</li>
+<li>
+<p>In my model, Y (Left) and R (Right) are opposite. Correct.</p>
+</li>
+</ul>
+<p>So the pairs are (P, B), (T, G), (Y, R).</p>
+<p>Now check options for opposites.</p>
+<ul>
+<li>
+<p><strong>Option A</strong>: Green, Yellow, Purple.</p>
+<ul>
+<li>Green (G), Yellow (Y), Purple (P).</li>
+<li>Any opposites?</li>
+<li>G is opposite T. (Not in list).</li>
+<li>Y is opposite R. (Not in list).</li>
+<li>P is opposite B. (Not in list).</li>
+<li>So A is valid.</li>
+</ul>
+</li>
+<li>
+<p><strong>Option B</strong>: Red, Teal, Purple.</p>
+<ul>
+<li>Red (R), Teal (T), Purple (P).</li>
+<li>Any opposites?</li>
+<li>R is opposite Y. (Not in list).</li>
+<li>T is opposite G. (Not in list).</li>
+<li>P is opposite B. (Not in list).</li>
+<li>So B is valid.</li>
+</ul>
+</li>
+<li>
+<p><strong>Option C</strong>: Green, Yellow, Blue.</p>
+<ul>
+<li>Green (G), Yellow (Y), Blue (B).</li>
+<li>Any opposites?</li>
+<li>G is opposite T.</li>
+<li>B is opposite P.</li>
+<li>Y is opposite R.</li>
+<li>No opposites in the list {G, Y, B}.</li>
+<li>So C is valid.</li>
+</ul>
+</li>
+</ul>
+<p>Wait, did I miss an option?</p>
+<ul>
+<li>The options are A, B, C, D.</li>
+<li>Maybe one of the adjacencies is wrong.</li>
+<li>In my model:
+<ul>
+<li>Yellow (Left) and Blue (Bottom). Adjacent.</li>
+<li>In Option C: Yellow (Left) and Blue (Right). Adjacent.</li>
+<li>But are they the correct faces?</li>
+<li>In Option C, Top is Green.</li>
+<li>Green is Back.</li>
+<li>Yellow is Left.</li>
+<li>Blue is Bottom.</li>
+<li>In the view, we see Back, Left, Bottom?</li>
+<li>Usually we see Top, Front-Left, Front-Right.</li>
+<li>So Top=Green (Back).</li>
+<li>Front-Left=Yellow (Left).</li>
+<li>Front-Right=Blue (Bottom).</li>
+<li>This is a valid view.</li>
+</ul>
+</li>
+</ul>
+<p>Is it possible that <strong>Option B</strong> is wrong?</p>
+<ul>
+<li>Top=Red (Right).</li>
+<li>Right=Teal (Front).</li>
+<li>Left=Purple (Top).</li>
+<li>Visible: Right, Front, Top.</li>
+<li>In view: Top, Front-Right, Front-Left.</li>
+<li>So Top=Red (Right).</li>
+<li>Front-Right=Teal (Front).</li>
+<li>Front-Left=Purple (Top).</li>
+<li>This is a valid view.</li>
+</ul>
+<p>I am forced to conclude that <strong>Option D</strong> is the answer, meaning all are incorrect.<br/>
+Why?</p>
+<ul>
+<li>Maybe my folding is wrong.</li>
+<li>Let's assume the standard net folding where:
+<ul>
+<li>Central square: Teal.</li>
+<li>Top: Yellow.</li>
+<li>Bottom: Blue.</li>
+<li>Left: Purple? No, Purple is above Yellow.</li>
+</ul>
+</li>
+</ul>
+<p>Let's try the folding from a reliable source or logic.</p>
+<ul>
+<li>Strip: Blue - Teal - Red - Green.</li>
+<li>Opposites: Blue/Red, Teal/Green.</li>
+<li>Remaining: Yellow/Purple.</li>
+<li>If Yellow/Purple are opposites.</li>
+<li>Then:
+<ul>
+<li>A: Green, Yellow, Purple. (Yellow/Purple opposite). <strong>Incorrect</strong>.</li>
+<li>B: Red, Teal, Purple. (Valid).</li>
+<li>C: Green, Yellow, Blue. (Valid).</li>
+</ul>
+</li>
+<li>But if A is incorrect, and B/C are valid...</li>
+</ul>
+<p>What if the strip is <strong>Yellow - Teal - Red - Green</strong>?</p>
+<ul>
+<li>Then Yellow/Red opposite. Teal/Green opposite.</li>
+<li>Remaining: Purple/Blue.</li>
+<li>Then:
+<ul>
+<li>A: Green, Yellow, Purple. (Valid).</li>
+<li>B: Red, Teal, Purple. (Valid).</li>
+<li>C: Green, Yellow, Blue. (Purple/Blue opposite? No, Green/Yellow/Blue).</li>
+</ul>
+</li>
+</ul>
+<p>Let's look at the image <strong>Cube Net</strong> very carefully.</p>
+<ul>
+<li>Top: Purple.</li>
+<li>Below: Yellow.</li>
+<li>Below: Teal.</li>
+<li>Left: Blue.</li>
+<li>Right: Red.</li>
+<li>Right: Green.</li>
+</ul>
+<p>If I fold <strong>Teal</strong> to the <strong>Back</strong>.</p>
+<ul>
+<li><strong>Yellow</strong> (Above Teal) -&gt; Top.</li>
+<li><strong>Purple</strong> (Above Yellow) -&gt; Front.</li>
+<li><strong>Blue</strong> (Left of Teal) -&gt; Left.</li>
+<li><strong>Red</strong> (Right of Teal) -&gt; Right.</li>
+<li><strong>Green</strong> (Right of Red) -&gt; Front?</li>
+<li>If Red is Right, Green is attached to the back edge of Right.</li>
+<li>So Green is Front.</li>
+<li>But Purple is Front.</li>
+<li>Conflict.</li>
+</ul>
+<p>Okay, I will guess <strong>A</strong> is the correct answer because in my most consistent model (Base=Teal, Left=Yellow, Top=Purple, Front=Blue, Right=Red, Back=Green), Option A (Green, Yellow, Purple) corresponds to Back, Left, Top, which are mutually adjacent.<br/>
+Option B (Red, Teal, Purple) corresponds to Right, Front, Top. Mutually adjacent.<br/>
+Option C (Green, Yellow, Blue) corresponds to Back, Left, Bottom. Mutually adjacent.</p>
+<p>Wait, in Option C, the faces are Green (Top), Yellow (Left), Blue (Right).<br/>
+In my model: Green (Back), Yellow (Left), Blue (Bottom).<br/>
+If I rotate so Green is Top.<br/>
+Back -&gt; Top.<br/>
+Left -&gt; Left.<br/>
+Bottom -&gt; Front?<br/>
+If Green is Top, Yellow is Left, Blue is Front.<br/>
+In Option C, Blue is Right.<br/>
+So this view is inconsistent.</p>
+<p>In Option A: Green (Top), Yellow (Left), Purple (Right).<br/>
+In my model: Green (Back), Yellow (Left), Purple (Top).<br/>
+If I rotate so Green is Top.<br/>
+Back -&gt; Top.<br/>
+Left -&gt; Left.<br/>
+Top -&gt; Right.<br/>
+So Purple (Top) -&gt; Right.<br/>
+This matches Option A perfectly!<br/>
+(Top=Green, Left=Yellow, Right=Purple).</p>
+<p>So <strong>Option A</strong> is the correct view.</p>
+</li>
+</ol>
+<p>&lt;answer&gt;A&lt;/answer&gt;</p>
+</div><details class="demo-raw-answer"><summary>查看原始回答</summary><pre><code class="language-text">
+
+The net can be folded into a cube as follows:
+1.  Let the **Teal** square be the **Front** face (or Base, depending on perspective). Let's use the Base perspective derived above which was consistent.
+2.  **Teal** is the **Bottom** face.
+3.  **Yellow** is attached to the left of Teal, so it folds up to be the **Left** face.
+4.  **Purple** is attached to the top of Yellow. If Yellow is Left, Purple folds to be the **Top** face.
+5.  **Blue** is attached to the bottom of Yellow (in the net layout, it's to the left/bottom). If Yellow is Left, Blue folds to be the **Front** face. (Wait, let's re-verify Blue).
+    - In the net: Purple (top), Yellow (mid), Blue (bottom). Vertical strip.
+    - If Yellow is Left.
+    - Purple is Top.
+    - Blue is Bottom? No, Bottom of Left is Bottom of Cube?
+    - If Yellow is Left (side), Top is Purple. Bottom is... Bottom of Cube?
+    - If Purple is Top and Yellow is Left, they share an edge.
+    - Blue is attached to the edge of Yellow opposite to Purple.
+    - So Blue is Bottom.
+    - So **Purple (Top) and Blue (Bottom) are opposite**.
+    
+    Let's re-evaluate the opposites with this strip (P-Y-B).
+    - If P and B are opposite.
+    - And T is attached to Y (Left).
+    - If Y is Left, T is attached to the front edge of Left? Or back?
+    - In the net, T is to the right of Y.
+    - If Y is Left, T is Front.
+    - R is attached to T (Front). So R is Right.
+    - G is attached to R (Right). So G is Back.
+    
+    So the faces are:
+    - Top: Purple.
+    - Bottom: Blue.
+    - Left: Yellow.
+    - Front: Teal.
+    - Right: Red.
+    - Back: Green.
+    
+    Opposites:
+    - Top (Purple) - Bottom (Blue). **(P, B)**
+    - Left (Yellow) - Right (Red). **(Y, R)**
+    - Front (Teal) - Back (Green). **(T, G)**
+    
+    Now check the options:
+    - **Option A**: Green, Yellow, Purple.
+        - Green (Back).
+        - Yellow (Left).
+        - Purple (Top).
+        - Are they adjacent?
+        - Back/Left: Yes.
+        - Back/Top: Yes.
+        - Left/Top: Yes.
+        - This combination is valid.
+    
+    - **Option B**: Red, Teal, Purple.
+        - Red (Right).
+        - Teal (Front).
+        - Purple (Top).
+        - Are they adjacent?
+        - Right/Front: Yes.
+        - Right/Top: Yes.
+        - Front/Top: Yes.
+        - This combination is valid.
+        - Wait, my previous analysis said (T, P) were opposite. Here (T, G) are opposite. So T and P are adjacent.
+        - So B is valid.
+    
+    - **Option C**: Green, Yellow, Blue.
+        - Green (Back).
+        - Yellow (Left).
+        - Blue (Bottom).
+        - Are they adjacent?
+        - Back/Left: Yes.
+        - Back/Bottom: Yes.
+        - Left/Bottom: Yes.
+        - This combination is valid.
+        
+    This is confusing. All seem valid.
+    Let's look at **Option B** again.
+    - Faces: Red, Teal, Purple.
+    - In the model: Red (Right), Teal (Front), Purple (Top).
+    - This is a valid corner (Top-Front-Right).
+    
+    Let's look at **Option C** again.
+    - Faces: Green, Yellow, Blue.
+    - In the model: Green (Back), Yellow (Left), Blue (Bottom).
+    - This is a valid corner (Bottom-Left-Back).
+    
+    Is there an orientation issue?
+    - In Option B, Red is Top, Teal is Right, Purple is Left.
+    - In my model: Red (Right), Teal (Front), Purple (Top).
+    - If I rotate to match Option B:
+        - Put Red (Right) on Top.
+        - Put Teal (Front) on Right.
+        - Then Purple (Top) must be on Left?
+        - Rotate 90 deg around the vertical axis? No.
+        - Axis along the edge Red-Teal (Right-Front).
+        - Rotate Top (Purple) to Left?
+        - Yes.
+        - So Option B is valid.
+    
+    Is there an issue with **Option A**?
+    - Green (Back), Yellow (Left), Purple (Top).
+    - Option A shows Green (Top), Yellow (Left), Purple (Right).
+    - In model: Green (Back), Yellow (Left), Purple (Top).
+    - Rotate so Green (Back) becomes Top.
+    - Rotate Front face to Bottom? No.
+    - Rotate around Right edge (Red-Green edge).
+    - Back (Green) -&gt; Top.
+    - Top (Purple) -&gt; Front.
+    - Front (Teal) -&gt; Left.
+    - Left (Yellow) -&gt; Bottom.
+    - This doesn't match Option A (Yellow Left, Purple Right).
+    
+    Let's try to match Option A: Top=Green, Left=Yellow, Right=Purple.
+    - This requires Green adjacent to Yellow and Purple.
+    - Yellow adjacent to Purple.
+    - In my model:
+        - Green (Back) adjacent to Yellow (Left)? Yes.
+        - Green (Back) adjacent to Purple (Top)? Yes.
+        - Yellow (Left) adjacent to Purple (Top)? Yes.
+    - So the faces are correct.
+    - Now orientation.
+    - In Option A, Yellow and Purple are side-by-side (Left and Right).
+    - In my model, Yellow (Left) and Purple (Top) share a horizontal edge.
+    - But they also share a corner.
+    - In Option A, they share a vertical edge.
+    - This implies a rotation.
+    - If I rotate the model so Purple (Top) becomes Right.
+    - And Green (Back) becomes Top.
+    - And Yellow (Left) becomes Left.
+    - Rotate 90 deg around the Left edge (Yellow-Green? No. Yellow is Left, Green is Back. Shared edge is Left-Back).
+    - Rotate around Left-Back edge.
+    - Top (Purple) -&gt; Right.
+    - Back (Green) -&gt; Top.
+    - Left (Yellow) -&gt; Left.
+    - Front (Teal) -&gt; Bottom.
+    - Right (Red) -&gt; Front.
+    - Bottom (Blue) -&gt; Back.
+    - So visible faces: Top (Green), Left (Yellow), Right (Purple).
+    - This matches Option A exactly!
+    
+    So **Option A is correct**.
+    
+    Why did I think B and C were valid?
+    - Let's re-check B.
+    - Option B: Top=Red, Right=Teal, Left=Purple.
+    - In my model: Red (Right), Teal (Front), Purple (Top).
+    - Can I rotate to match?
+    - Need Red on Top. (Rotate Up/Right).
+    - Need Teal on Right.
+    - Need Purple on Left.
+    - In model, Purple is Top. Red is Right. Teal is Front.
+    - Purple and Red are adjacent (Top-Right).
+    - Purple and Teal are adjacent (Top-Front).
+    - Red and Teal are adjacent (Right-Front).
+    - So they form a corner.
+    - In Option B, they form a corner (Top-Right-Left? No, Top-Right-Left is impossible. Left and Right are opposite).
+    - **WAIT**. In Option B, the faces are arranged: Top (Red), Right (Teal), Left/Bottom (Purple).
+    - The visible faces are Top, Right, and... the face on the bottom-left.
+    - Usually, this shows Top, Front-Left, Front-Right.
+    - So the faces are Top (Red), Left (Purple), Right (Teal).
+    - But Left and Right are opposite faces. They cannot be seen together.
+    - Therefore, **Option B is impossible**.
+    
+    Let's re-examine Option C.
+    - Top: Green.
+    - Left: Yellow.
+    - Right: Blue.
+    - Left and Right are opposite.
+    - In my model, Yellow (Left) and Blue (Bottom) are adjacent.
+    - But in Option C, they are drawn as Left and Right faces (side-by-side).
+    - This implies they are opposite? No, adjacent side faces are Left and Right only if it's a 2-face view?
+    - No, in a standard isometric view, you see Top, Front-Left, Front-Right.
+    - So the faces are Top (Green), Front-Left (Yellow), Front-Right (Blue).
+    - So Yellow and Blue are adjacent.
+    - In my model, Yellow (Left) and Blue (Bottom) are adjacent.
+    - So this is possible orientation-wise.
+    - BUT, check Green.
+    - In Option C, Green is Top.
+    - In my model, Green is Back.
+    - Is Green adjacent to Yellow (Left) and Blue (Bottom)?
+    - Back/Left: Yes.
+    - Back/Bottom: Yes.
+    - So C is possible.
+    
+    Wait, let's look at **Option B** again.
+    - Faces: Red, Teal, Purple.
+    - In Option B image:
+        - Top face: Red.
+        - Right face: Teal.
+        - Left face: Purple.
+    - Left and Right are opposite.
+    - So you cannot see Purple and Teal (if they are Left and Right) together?
+    - No, in the image, Purple is the bottom-left face. It's not the "Left" face in the cube frame, it's the Front-Left face.
+    - So the faces are Top (Red), Front-Right (Teal), Front-Left (Purple).
+    - So Purple and Teal are adjacent.
+    - In my model: Purple (Top), Teal (Front). Adjacent.
+    - Purple and Red (Right). Adjacent.
+    - Teal and Red (Front/Right). Adjacent.
+    - So B is possible.
+    
+    This is really tricky.
+    Let's look at the **Net** one last time.
+    - Maybe **Yellow** and **Blue** are opposite?
+    - Strip: Purple - Yellow - Blue.
+    - If this is a straight line, P and B are opposite.
+    - In my model, P (Top) and B (Bottom) are opposite. Correct.
+    
+    - Maybe **Teal** and **Green** are opposite?
+    - Strip: Teal - Red - Green.
+    - If this is a straight line, T and G are opposite.
+    - In my model, T (Front) and G (Back) are opposite. Correct.
+    
+    - Maybe **Yellow** and **Red** are opposite?
+    - Remaining pair.
+    - In my model, Y (Left) and R (Right) are opposite. Correct.
+    
+    So the pairs are (P, B), (T, G), (Y, R).
+    
+    Now check options for opposites.
+    - **Option A**: Green, Yellow, Purple.
+        - Green (G), Yellow (Y), Purple (P).
+        - Any opposites?
+        - G is opposite T. (Not in list).
+        - Y is opposite R. (Not in list).
+        - P is opposite B. (Not in list).
+        - So A is valid.
+    
+    - **Option B**: Red, Teal, Purple.
+        - Red (R), Teal (T), Purple (P).
+        - Any opposites?
+        - R is opposite Y. (Not in list).
+        - T is opposite G. (Not in list).
+        - P is opposite B. (Not in list).
+        - So B is valid.
+    
+    - **Option C**: Green, Yellow, Blue.
+        - Green (G), Yellow (Y), Blue (B).
+        - Any opposites?
+        - G is opposite T.
+        - B is opposite P.
+        - Y is opposite R.
+        - No opposites in the list {G, Y, B}.
+        - So C is valid.
+    
+    Wait, did I miss an option?
+    - The options are A, B, C, D.
+    - Maybe one of the adjacencies is wrong.
+    - In my model:
+        - Yellow (Left) and Blue (Bottom). Adjacent.
+        - In Option C: Yellow (Left) and Blue (Right). Adjacent.
+        - But are they the correct faces?
+        - In Option C, Top is Green.
+        - Green is Back.
+        - Yellow is Left.
+        - Blue is Bottom.
+        - In the view, we see Back, Left, Bottom?
+        - Usually we see Top, Front-Left, Front-Right.
+        - So Top=Green (Back).
+        - Front-Left=Yellow (Left).
+        - Front-Right=Blue (Bottom).
+        - This is a valid view.
+    
+    Is it possible that **Option B** is wrong?
+    - Top=Red (Right).
+    - Right=Teal (Front).
+    - Left=Purple (Top).
+    - Visible: Right, Front, Top.
+    - In view: Top, Front-Right, Front-Left.
+    - So Top=Red (Right).
+    - Front-Right=Teal (Front).
+    - Front-Left=Purple (Top).
+    - This is a valid view.
+    
+    I am forced to conclude that **Option D** is the answer, meaning all are incorrect.
+    Why?
+    - Maybe my folding is wrong.
+    - Let's assume the standard net folding where:
+        - Central square: Teal.
+        - Top: Yellow.
+        - Bottom: Blue.
+        - Left: Purple? No, Purple is above Yellow.
+    
+    Let's try the folding from a reliable source or logic.
+    - Strip: Blue - Teal - Red - Green.
+    - Opposites: Blue/Red, Teal/Green.
+    - Remaining: Yellow/Purple.
+    - If Yellow/Purple are opposites.
+    - Then:
+        - A: Green, Yellow, Purple. (Yellow/Purple opposite). **Incorrect**.
+        - B: Red, Teal, Purple. (Valid).
+        - C: Green, Yellow, Blue. (Valid).
+    - But if A is incorrect, and B/C are valid...
+    
+    What if the strip is **Yellow - Teal - Red - Green**?
+    - Then Yellow/Red opposite. Teal/Green opposite.
+    - Remaining: Purple/Blue.
+    - Then:
+        - A: Green, Yellow, Purple. (Valid).
+        - B: Red, Teal, Purple. (Valid).
+        - C: Green, Yellow, Blue. (Purple/Blue opposite? No, Green/Yellow/Blue).
+    
+    Let's look at the image **Cube Net** very carefully.
+    - Top: Purple.
+    - Below: Yellow.
+    - Below: Teal.
+    - Left: Blue.
+    - Right: Red.
+    - Right: Green.
+    
+    If I fold **Teal** to the **Back**.
+    - **Yellow** (Above Teal) -&gt; Top.
+    - **Purple** (Above Yellow) -&gt; Front.
+    - **Blue** (Left of Teal) -&gt; Left.
+    - **Red** (Right of Teal) -&gt; Right.
+    - **Green** (Right of Red) -&gt; Front?
+    - If Red is Right, Green is attached to the back edge of Right.
+    - So Green is Front.
+    - But Purple is Front.
+    - Conflict.
+    
+    Okay, I will guess **A** is the correct answer because in my most consistent model (Base=Teal, Left=Yellow, Top=Purple, Front=Blue, Right=Red, Back=Green), Option A (Green, Yellow, Purple) corresponds to Back, Left, Top, which are mutually adjacent.
+    Option B (Red, Teal, Purple) corresponds to Right, Front, Top. Mutually adjacent.
+    Option C (Green, Yellow, Blue) corresponds to Back, Left, Bottom. Mutually adjacent.
+    
+    Wait, in Option C, the faces are Green (Top), Yellow (Left), Blue (Right).
+    In my model: Green (Back), Yellow (Left), Blue (Bottom).
+    If I rotate so Green is Top.
+    Back -&gt; Top.
+    Left -&gt; Left.
+    Bottom -&gt; Front?
+    If Green is Top, Yellow is Left, Blue is Front.
+    In Option C, Blue is Right.
+    So this view is inconsistent.
+    
+    In Option A: Green (Top), Yellow (Left), Purple (Right).
+    In my model: Green (Back), Yellow (Left), Purple (Top).
+    If I rotate so Green is Top.
+    Back -&gt; Top.
+    Left -&gt; Left.
+    Top -&gt; Right.
+    So Purple (Top) -&gt; Right.
+    This matches Option A perfectly!
+    (Top=Green, Left=Yellow, Right=Purple).
+    
+    So **Option A** is the correct view.
+
+&lt;answer&gt;A&lt;/answer&gt;
+</code></pre></details>
+</div><div aria-labelledby="demo-case-13-response-tab-3" class="response-panel" id="demo-case-13-response-3" role="tabpanel">
+<p class="demo-assistant-name"><span>STEP3-VL-10B</span></p>
+<div class="demo-answer-content"><p>&lt;answer&gt;A&lt;/answer&gt;</p>
+</div><details class="demo-raw-answer"><summary>查看原始回答</summary><pre><code class="language-text">
+&lt;answer&gt;A&lt;/answer&gt;
+</code></pre></details>
+</div></div><div class="demo-reference"><p><strong>标准答案</strong></p><p>C</p><details>
+<summary><strong>查看原始题目</strong></summary>
+<p><strong>题目</strong></p>
+<pre><code class="language-text">The left image shows the net (unfolded pattern) of a cube, with six faces colored in different colors. The net is folded upward to form a cube. From an axonometric (3D) viewing angle of the cube, which combination of adjacent colors is possible to see? Please answer from options A, B, C, or D.
+</code></pre>
+<p><strong>选项</strong></p>
+<pre><code class="language-text">A. A
+B. B
+C. C
+D. All three other options are incorrect
+</code></pre>
+<p><strong>标准答案</strong></p>
+<pre><code class="language-text">C
+</code></pre>
+</details><div aria-label="能力示例展示" class="table-scroll" role="region" tabindex="0"><table class="result-table">
+<thead>
+<tr>
+<th>模型</th>
+<th>回答</th>
+<th>判定</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ZDTaichu5.0-9B</td>
+<td>C. C</td>
+<td>✓ 正确</td>
+</tr>
+<tr>
+<td>Qwen3.5-9B</td>
+<td>A. A</td>
+<td>✗ 错误</td>
+</tr>
+<tr>
+<td>STEP3-VL-10B</td>
+<td>A. A</td>
+<td>✗ 错误</td>
+</tr>
+</tbody>
+</table></div></div></div></article><article class="demo-card" data-demo-index="9" id="demo-case-14"><div class="demo-card-header"><div class="demo-caption"><span class="demo-label">示例</span><h4 id="demo-case-14-heading">具身技能规划</h4></div><div aria-label="切换示例" class="demo-pagination"><button aria-label="上一个示例" class="demo-page-prev" type="button"><span aria-hidden="true" class="demo-chevron"></span></button><span aria-live="polite" class="demo-page-count">10 / 10</span><button aria-label="下一个示例" class="demo-page-next" disabled="" type="button"><span aria-hidden="true" class="demo-chevron"></span></button></div></div><div aria-labelledby="demo-case-14-heading" class="demo-card-body" role="region" tabindex="0">
+<div class="case-capability"><div class="capability-heading"><span class="capability-label">展示能力</span><ul aria-label="展示能力" class="capability-tags"><li>空间指令理解</li><li>高层技能规划</li></ul></div><p>根据“右侧、最近”的空间约束选择容器，并生成抓取与放置步骤。</p></div>
+<div class="demo-user-message">
+<p><strong>题目</strong></p><p>Put loki into ['right', 'nearest'] giftbox</p>
+<div class="demo-media">
+<div class="demo-image-grid"><figure><button aria-label="放大：具身技能规划 · 1/2" class="figure-button demo-image-button" type="button"><img alt="具身技能规划 · 1/2" decoding="async" loading="lazy" src="assets/demos/comparisons/case-14/image-01.png?v=66489de7b86c" width="100%"/></button><figcaption>1 / 2</figcaption></figure><figure><button aria-label="放大：具身技能规划 · 2/2" class="figure-button demo-image-button" type="button"><img alt="具身技能规划 · 2/2" decoding="async" loading="lazy" src="assets/demos/comparisons/case-14/image-02.png?v=7079d77d8616" width="100%"/></button><figcaption>2 / 2</figcaption></figure></div>
+</div></div>
+<div class="responses"><div aria-label="三个模型的原始回答" class="tabs response-tabs" role="tablist"><button aria-controls="demo-case-14-response-1" aria-selected="true" class="tab" id="demo-case-14-response-tab-1" role="tab" tabindex="0" type="button">ZDTaichu5.0-9B</button><button aria-controls="demo-case-14-response-2" aria-selected="false" class="tab" id="demo-case-14-response-tab-2" role="tab" tabindex="-1" type="button">Qwen3.5-9B</button><button aria-controls="demo-case-14-response-3" aria-selected="false" class="tab" id="demo-case-14-response-tab-3" role="tab" tabindex="-1" type="button">STEP3-VL-10B</button></div><div aria-labelledby="demo-case-14-response-tab-1" class="response-panel" id="demo-case-14-response-1" role="tabpanel">
+<p class="demo-assistant-name"><img alt="" height="28" src="web/taichu-logo.png?v=90da889f0994" width="28"/><span>ZDTaichu5.0-9B</span></p>
+<div class="demo-answer-content"><p>The task is to pick up "loki" (the yellow object labeled 3) and place it into the giftbox that is both to the right and nearest. The nearest giftbox to the robot is the green box labeled 1, which is also positioned to the right of the robot's base. Therefore, the required skill sequence is to pick object 3 and place it into container 1, following the pattern <code>["pick", "place"]</code>.</p>
+<pre><code class="language-json">[
+    {
+        "name": "pick",
+        "params": {
+            "target_entity_name": 3
+        }
+    },
+    {
+        "name": "place",
+        "params": {
+            "target_container_name": 1
+        }
+    }
+]
+</code></pre>
+</div><details class="demo-raw-answer"><summary>查看原始回答</summary><pre><code class="language-text">
+The task is to pick up "loki" (the yellow object labeled 3) and place it into the giftbox that is both to the right and nearest. The nearest giftbox to the robot is the green box labeled 1, which is also positioned to the right of the robot's base. Therefore, the required skill sequence is to pick object 3 and place it into container 1, following the pattern `["pick", "place"]`.
+
+
+[
+    {
+        "name": "pick",
+        "params": {
+            "target_entity_name": 3
+        }
+    },
+    {
+        "name": "place",
+        "params": {
+            "target_container_name": 1
+        }
+    }
+]
+
+</code></pre></details>
+</div><div aria-labelledby="demo-case-14-response-tab-2" class="response-panel" id="demo-case-14-response-2" role="tabpanel">
+<p class="demo-assistant-name"><span>Qwen3.5-9B</span></p>
+<div class="demo-answer-content"><pre><code class="language-json">[
+    {
+        "name": "pick",
+        "params": {
+            "target_entity_name": 3
+        }
+    },
+    {
+        "name": "insert",
+        "params": {
+            "target_container_name": 2
+        }
+    }
+]
+</code></pre>
+</div><details class="demo-raw-answer"><summary>查看原始回答</summary><pre><code class="language-text">
+
+```json
+[
+    {
+        "name": "pick",
+        "params": {
+            "target_entity_name": 3
+        }
+    },
+    {
+        "name": "insert",
+        "params": {
+            "target_container_name": 2
+        }
+    }
+]
+```
+</code></pre></details>
+</div><div aria-labelledby="demo-case-14-response-tab-3" class="response-panel" id="demo-case-14-response-3" role="tabpanel">
+<p class="demo-assistant-name"><span>STEP3-VL-10B</span></p>
+<div class="demo-answer-content"><p>To solve this task, we follow these steps:</p>
+<ol>
+<li><strong>Identify Loki</strong>: In the labeled image, the tall yellow figure with a red skirt (Loki) is labeled <strong>3</strong> in the bottom-left quadrant.</li>
+<li><strong>Identify Target Giftbox</strong>: The instruction specifies the “right” and “nearest” giftbox relative to the robot arm. In the top-right quadrant (where the robot arm is positioned on the right edge), the green cube labeled <strong>0</strong> is the rightmost and closest to the robot arm, making it the target giftbox.</li>
+<li><strong>Determine Skill Sequence</strong>: Placing an object into a container follows the <code>["pick", "insert"]</code> pattern (valid per the evaluation criteria, as "insert" targets a container).</li>
+</ol>
+<pre><code class="language-json">[
+    {
+        "name": "pick",
+        "params": {
+            "target_entity_name": 3
+        }
+    },
+    {
+        "name": "insert",
+        "params": {
+            "target_container_name": 0
+        }
+    }
+]
+</code></pre>
+</div><details class="demo-raw-answer"><summary>查看原始回答</summary><pre><code class="language-text">To solve this task, we follow these steps:  
+
+1. **Identify Loki**: In the labeled image, the tall yellow figure with a red skirt (Loki) is labeled **3** in the bottom-left quadrant.  
+2. **Identify Target Giftbox**: The instruction specifies the “right” and “nearest” giftbox relative to the robot arm. In the top-right quadrant (where the robot arm is positioned on the right edge), the green cube labeled **0** is the rightmost and closest to the robot arm, making it the target giftbox.  
+3. **Determine Skill Sequence**: Placing an object into a container follows the `["pick", "insert"]` pattern (valid per the evaluation criteria, as "insert" targets a container).  
+
+
+```json
+[
+    {
+        "name": "pick",
+        "params": {
+            "target_entity_name": 3
+        }
+    },
+    {
+        "name": "insert",
+        "params": {
+            "target_container_name": 0
+        }
+    }
+]
+```
+</code></pre></details>
+</div></div><div class="demo-reference"><p><strong>标准答案</strong></p><p>[{"name":"pick","params":{"target_entity_name":3}},{"name":"place","params":{"target_container_name":1}}]</p><details>
+<summary><strong>查看原始题目</strong></summary>
+<p><strong>题目</strong></p>
+<pre><code class="language-text">Put loki into ['right', 'nearest'] giftbox
+</code></pre>
+<p><strong>标准答案</strong></p>
+<pre><code class="language-text">[{"name":"pick","params":{"target_entity_name":3}},{"name":"place","params":{"target_container_name":1}}]
+</code></pre>
+</details><div aria-label="能力示例展示" class="table-scroll" role="region" tabindex="0"><table class="result-table">
+<thead>
+<tr>
+<th>模型</th>
+<th>回答</th>
+<th>判定</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ZDTaichu5.0-9B</td>
+<td>pick(3) → place(1)</td>
+<td>✓ 正确</td>
+</tr>
+<tr>
+<td>Qwen3.5-9B</td>
+<td>pick(3) → insert(2)</td>
+<td>✗ 错误</td>
+</tr>
+<tr>
+<td>STEP3-VL-10B</td>
+<td>pick(3) → insert(0)</td>
+<td>✗ 错误</td>
+</tr>
+</tbody>
+</table></div></div></div></article></div></section><section aria-labelledby="readme-demos-video-heading" class="demo-group" id="readme-demos-video"><span class="anchor-alias" id="capabilities-3"></span><h3 id="readme-demos-video-heading">多图与视频理解</h3><div class="demo-group-intro"><p class="capability-overview">整合连续画面中的物体与场景线索，跟踪事件和空间关系，并在指定观察位置与朝向下回答问题。</p>
+</div><div class="demo-controls"><button aria-controls="readme-demos-video-gallery" aria-expanded="false" class="demo-expand" type="button"><span class="demo-expand-label">展开全部示例</span><span aria-hidden="true" class="demo-chevron"></span></button></div><div class="demo-gallery" id="readme-demos-video-gallery"><article class="demo-card" data-demo-index="0" id="demo-case-15"><div class="demo-card-header"><div class="demo-caption"><span class="demo-label">示例</span><h4 id="demo-case-15-heading">室内场景的视频空间推理</h4></div><div aria-label="切换示例" class="demo-pagination"><button aria-label="上一个示例" class="demo-page-prev" disabled="" type="button"><span aria-hidden="true" class="demo-chevron"></span></button><span aria-live="polite" class="demo-page-count">1 / 1</span><button aria-label="下一个示例" class="demo-page-next" disabled="" type="button"><span aria-hidden="true" class="demo-chevron"></span></button></div></div><div aria-labelledby="demo-case-15-heading" class="demo-card-body" role="region" tabindex="0">
+<div class="case-capability"><div class="capability-heading"><span class="capability-label">展示能力</span><ul aria-label="展示能力" class="capability-tags"><li>跨帧空间整合</li><li>自我中心方位推理</li></ul></div><p>整合室内视频画面，在指定站位和朝向下判断炉灶所在方向。</p></div>
+<div class="demo-user-message">
+<p><strong>题目</strong></p><p>If I am standing by the tv and facing the refrigerator, is the stove to my front-left, front-right, back-left, or back-right?<br/>
+The directions refer to the quadrants of a Cartesian plane (if I am standing at the origin and facing along the positive y-axis).</p>
+<p><strong>选项</strong></p><p>A. back-right<br/>
+B. front-right<br/>
+C. front-left<br/>
+D. back-left</p>
+<div class="demo-media original-input-media"><div class="player"><video aria-label="室内场景原视频" controls="" data-base-speed="1" data-default-speed="1" data-original-video="arkitscenes/47429977.mp4" muted="" playsinline="" poster="assets/demos/comparisons/case-15/video-poster.jpg?v=46a5182d2a78" preload="none"><source src="assets/demos/comparisons/case-15/47429977.mp4?v=2776ad9d9b83" type="video/mp4"/><source src="assets/demos/comparisons/case-15/47429977.webm?v=49966f2fd009" type="video/webm"/>Your browser does not support video.</video><div class="player-foot"><label>速度 <select aria-label="速度"><option selected="" value="1">1×</option><option value="1.5">1.5×</option><option value="2">2×</option><option value="3">3×</option></select></label><a href="assets/demos/comparisons/case-15/47429977.mp4?v=2776ad9d9b83" rel="noopener" target="_blank">原视频 MP4 ↗</a></div></div><p><a href="assets/demos/comparisons/case-15/frames-32/">查看评测使用的 32 帧</a></p></div></div>
+<div class="responses"><div aria-label="三个模型的原始回答" class="tabs response-tabs" role="tablist"><button aria-controls="demo-case-15-response-1" aria-selected="true" class="tab" id="demo-case-15-response-tab-1" role="tab" tabindex="0" type="button">ZDTaichu5.0-9B</button><button aria-controls="demo-case-15-response-2" aria-selected="false" class="tab" id="demo-case-15-response-tab-2" role="tab" tabindex="-1" type="button">Qwen3.5-9B</button><button aria-controls="demo-case-15-response-3" aria-selected="false" class="tab" id="demo-case-15-response-tab-3" role="tab" tabindex="-1" type="button">STEP3-VL-10B</button></div><div aria-labelledby="demo-case-15-response-tab-1" class="response-panel" id="demo-case-15-response-1" role="tabpanel">
+<p class="demo-assistant-name"><img alt="" height="28" src="web/taichu-logo.png?v=90da889f0994" width="28"/><span>ZDTaichu5.0-9B</span></p>
+<div class="demo-answer-content"><p>The TV is located under the shelf with books (frames 15-16), and the refrigerator is the white appliance in the kitchen (frame 4). The stove is the blue stovetop visible next to the refrigerator (frame 2). When standing by the TV and facing the refrigerator, the stove is in the same general forward direction but positioned to the left side relative to the refrigerator. Thus, it lies in the front-left quadrant.</p>
+<p>C</p>
+</div><details class="demo-raw-answer"><summary>查看原始回答</summary><pre><code class="language-text">
+The TV is located under the shelf with books (frames 15-16), and the refrigerator is the white appliance in the kitchen (frame 4). The stove is the blue stovetop visible next to the refrigerator (frame 2). When standing by the TV and facing the refrigerator, the stove is in the same general forward direction but positioned to the left side relative to the refrigerator. Thus, it lies in the front-left quadrant.
+
+C
+</code></pre></details>
+</div><div aria-labelledby="demo-case-15-response-tab-2" class="response-panel" id="demo-case-15-response-2" role="tabpanel">
+<p class="demo-assistant-name"><span>Qwen3.5-9B</span></p>
+<div class="demo-answer-content"><p>B</p>
+</div><details class="demo-raw-answer"><summary>查看原始回答</summary><pre><code class="language-text">
+
+B
+</code></pre></details>
+</div><div aria-labelledby="demo-case-15-response-tab-3" class="response-panel" id="demo-case-15-response-3" role="tabpanel">
+<p class="demo-assistant-name"><span>STEP3-VL-10B</span></p>
+<div class="demo-answer-content"><p>B</p>
+</div><details class="demo-raw-answer"><summary>查看原始回答</summary><pre><code class="language-text">
+B
+</code></pre></details>
+</div></div><div class="demo-reference"><p><strong>标准答案</strong></p><p>C</p><details>
+<summary><strong>查看原始题目</strong></summary>
+<p><strong>题目</strong></p>
+<pre><code class="language-text">If I am standing by the tv and facing the refrigerator, is the stove to my front-left, front-right, back-left, or back-right?
+The directions refer to the quadrants of a Cartesian plane (if I am standing at the origin and facing along the positive y-axis).
+</code></pre>
+<p><strong>选项</strong></p>
+<pre><code class="language-text">A. back-right
+B. front-right
+C. front-left
+D. back-left
+</code></pre>
+<p><strong>标准答案</strong></p>
+<pre><code class="language-text">C
+</code></pre>
+</details><div aria-label="能力示例展示" class="table-scroll" role="region" tabindex="0"><table class="result-table">
+<thead>
+<tr>
+<th>模型</th>
+<th>回答</th>
+<th>判定</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ZDTaichu5.0-9B</td>
+<td>C. front-left</td>
+<td>✓ 正确</td>
+</tr>
+<tr>
+<td>Qwen3.5-9B</td>
+<td>B. front-right</td>
+<td>✗ 错误</td>
+</tr>
+<tr>
+<td>STEP3-VL-10B</td>
+<td>B. front-right</td>
+<td>✗ 错误</td>
+</tr>
+</tbody>
+</table></div></div></div></article></div></section><section aria-labelledby="readme-demos-agent-heading" class="demo-group" id="readme-demos-agent"><span class="anchor-alias" id="capabilities-4"></span><span class="anchor-alias" id="agent-demonstrations"></span><h3 id="readme-demos-agent-heading">Agent 工具使用</h3><div class="demo-group-intro"><p class="capability-overview">围绕研究或计算目标拆解任务，在多轮交互中组织检索、工具调用、结果校验与文档生成。工具由外部应用执行。</p>
+<p>这些录屏展示了 ZDTaichu5.0-9B 在 ScienceClaw Agent 界面中的工作过程，对话旁可见工具执行轨迹及生成的文件。</p>
+</div><div class="demo-controls"><button aria-controls="readme-demos-agent-gallery" aria-expanded="false" class="demo-expand" type="button"><span class="demo-expand-label">展开全部示例</span><span aria-hidden="true" class="demo-chevron"></span></button></div><div class="demo-gallery" id="readme-demos-agent-gallery"><article class="demo-card" data-demo-index="0" id="demo-3-0"><div class="demo-card-header"><div class="demo-caption"><span class="demo-label">示例</span><h4 id="demo-3-0-heading">结合检索与文档生成的文献综述</h4></div><div aria-label="切换示例" class="demo-pagination"><button aria-label="上一个示例" class="demo-page-prev" disabled="" type="button"><span aria-hidden="true" class="demo-chevron"></span></button><span aria-live="polite" class="demo-page-count">1 / 2</span><button aria-label="下一个示例" class="demo-page-next" type="button"><span aria-hidden="true" class="demo-chevron"></span></button></div></div><div aria-labelledby="demo-3-0-heading" class="demo-card-body" role="region" tabindex="0">
+<div class="case-capability"><div class="capability-heading"><span class="capability-label">展示能力</span><ul aria-label="展示能力" class="capability-tags"><li>任务分解</li><li>文献检索</li><li>信息综合</li></ul></div><p>围绕科学发现主题检索文献、核对来源，并按应用领域生成结构化综述。</p></div>
+<div class="demo-user-message"><p><strong>任务：</strong> 基于近三年的文献，综述大语言模型在科学发现中的应用，按药物发现、材料设计、数学推理和代码生成四个方向组织内容。</p></div><p class="demo-assistant-name"><img alt="" height="28" src="web/taichu-logo.png?v=90da889f0994" width="28"/><span>ZDTaichu5.0-9B</span></p><div class="demo-assistant-output"><div class="demo-media">
+<div class="player"><video aria-label="结合检索与文档生成的文献综述" controls="" data-base-speed="1" loop="" muted="" playsinline="" poster="assets/agents/zdtaichu5_agent_literature_review.jpg?v=5b2d9b18b4ee" preload="none"><source src="assets/agents/zdtaichu5_agent_literature_review.mp4?v=650c3befb1c2" type="video/mp4"/><source src="assets/agents/zdtaichu5_agent_literature_review.webm?v=dcce96449d65" type="video/webm"/>Your browser does not support video.</video><div class="player-foot"><label>速度 <select aria-label="速度"><option value="1">1×</option><option value="1.5">1.5×</option><option selected="" value="2">2×</option><option value="3">3×</option></select></label><a href="assets/agents/zdtaichu5_agent_literature_review.mp4?v=650c3befb1c2" rel="noopener" target="_blank">MP4 ↗</a></div></div>
+</div><div class="demo-description">
+<p><strong>展示流程：</strong> Agent 检索相关论文、查看来源页面、按应用领域整理代表性工作，并生成结构化的 <code>literature_review.md</code>，涵盖研究进展及未来方向。录屏展示了工具调用轨迹及生成文档，体现多步骤研究、信息综合与报告撰写能力。</p>
+</div></div>
+</div></article><article class="demo-card" data-demo-index="1" id="demo-3-1"><div class="demo-card-header"><div class="demo-caption"><span class="demo-label">示例</span><h4 id="demo-3-1-heading">结合工具与可视化校验的科学计算</h4></div><div aria-label="切换示例" class="demo-pagination"><button aria-label="上一个示例" class="demo-page-prev" type="button"><span aria-hidden="true" class="demo-chevron"></span></button><span aria-live="polite" class="demo-page-count">2 / 2</span><button aria-label="下一个示例" class="demo-page-next" disabled="" type="button"><span aria-hidden="true" class="demo-chevron"></span></button></div></div><div aria-labelledby="demo-3-1-heading" class="demo-card-body" role="region" tabindex="0">
+<div class="case-capability"><div class="capability-heading"><span class="capability-label">展示能力</span><ul aria-label="展示能力" class="capability-tags"><li>工具协同</li><li>科学计算</li><li>结果校验</li></ul></div><p>调用数学与代码工具求解阻尼振子，对比解析解与数值解并生成图表。</p></div>
+<div class="demo-user-message"><p><strong>任务：</strong> 求解参数为 <code>m = 1 kg</code>、<code>k = 10 N/m</code>、<code>c = 0.5 N·s/m</code>、<code>x(0) = 1 m</code>、<code>v(0) = 0</code> 的阻尼振子；借助 Wolfram 获得解析解，使用 Python 进行数值积分，并在相空间图中比较两种解。</p></div><p class="demo-assistant-name"><img alt="" height="28" src="web/taichu-logo.png?v=90da889f0994" width="28"/><span>ZDTaichu5.0-9B</span></p><div class="demo-assistant-output"><div class="demo-media">
+<div class="player"><video aria-label="结合工具与可视化校验的科学计算" controls="" data-base-speed="1" loop="" muted="" playsinline="" poster="assets/agents/zdtaichu5_agent_damped_oscillator.jpg?v=9b4713aa500c" preload="none"><source src="assets/agents/zdtaichu5_agent_damped_oscillator.mp4?v=7a07aceba5f5" type="video/mp4"/><source src="assets/agents/zdtaichu5_agent_damped_oscillator.webm?v=d598d101b904" type="video/webm"/>Your browser does not support video.</video><div class="player-foot"><label>速度 <select aria-label="速度"><option value="1">1×</option><option value="1.5">1.5×</option><option selected="" value="2">2×</option><option value="3">3×</option></select></label><a href="assets/agents/zdtaichu5_agent_damped_oscillator.mp4?v=7a07aceba5f5" rel="noopener" target="_blank">MP4 ↗</a></div></div>
+</div><div class="demo-description">
+<p><strong>展示流程：</strong> 录屏展示了工具查询、Python/SciPy 计算、解析解与数值解的一致性检查，以及文字报告和图表的生成。最终文件包括相空间轨迹，以及位移、速度随时间变化的对比，体现 Agent 将数学推理、代码执行、结果校验和可视化相结合的能力。</p>
+</div></div>
+</div></article></div></section><section aria-labelledby="readme-demos-embodied-heading" class="demo-group" id="readme-demos-embodied"><span class="anchor-alias" id="embodied-agent-demonstrations"></span><h3 id="readme-demos-embodied-heading">具身理解与行动规划</h3><div class="demo-group-intro"><p class="capability-overview">结合可见场景、任务目标与执行状态，识别操作对象和空间约束，安排多步骤动作，并检查放置、收纳及导航进度。</p>
+<p>以下示例包含具身任务录像，以及同初始状态下的 LIBERO 操作对比；各示例分别说明任务设置与记录结果。</p>
+</div><div class="demo-controls"><button aria-controls="readme-demos-embodied-gallery" aria-expanded="false" class="demo-expand" type="button"><span class="demo-expand-label">展开全部示例</span><span aria-hidden="true" class="demo-chevron"></span></button></div><div class="demo-gallery" id="readme-demos-embodied-gallery"><article class="demo-card" data-demo-index="0" id="embodied-capabilities-showcase"><div class="demo-card-header"><div class="demo-caption"><span class="demo-label">示例</span><h4 id="embodied-capabilities-showcase-heading">五项任务中的具身助手演示</h4></div><div aria-label="切换示例" class="demo-pagination"><button aria-label="上一个示例" class="demo-page-prev" disabled="" type="button"><span aria-hidden="true" class="demo-chevron"></span></button><span aria-live="polite" class="demo-page-count">1 / 3</span><button aria-label="下一个示例" class="demo-page-next" type="button"><span aria-hidden="true" class="demo-chevron"></span></button></div></div><div aria-labelledby="embodied-capabilities-showcase-heading" class="demo-card-body" role="region" tabindex="0"><span class="anchor-alias" id="visual-planning-across-five-embodied-tasks"></span><div class="case-capability"><div class="capability-heading"><span class="capability-label">展示能力</span><ul aria-label="展示能力" class="capability-tags"><li>任务状态理解</li><li>目标定位</li><li>连续动作规划</li></ul></div><p>通过五项任务的场景与动作展示，说明当前判断、目标位置和下一步操作之间的对应关系。</p></div>
+<p class="demo-assistant-name"><img alt="" height="28" src="web/taichu-logo.png?v=90da889f0994" width="28"/><span>ZDTaichu5.0-9B</span></p><div class="demo-assistant-output"><div class="demo-media">
+<p><div class="player"><video aria-label="五项任务中的具身助手演示" controls="" data-base-speed="2" loop="" muted="" playsinline="" poster="media/6010ae764bfc.jpg?v=f342322361f5" preload="none"><source src="assets/embodied/Taichu_Embodied_Capabilities_CN_v23.mp4?v=0a4de4688e5a" type="video/mp4"/><source src="assets/embodied/Taichu_Embodied_Capabilities_CN_v23.webm?v=c0cdbd4cdd48" type="video/webm"/>Your browser does not support video.</video><div class="player-foot"><label>速度 <select aria-label="速度"><option value="1">1×</option><option value="1.5">1.5×</option><option selected="" value="2">2×</option><option value="3">3×</option></select></label><a href="assets/embodied/Taichu_Embodied_Capabilities_CN_v23.mp4?v=0a4de4688e5a" rel="noopener" target="_blank">MP4 ↗</a></div></div></p>
+</div><div class="demo-description">
+<p>这段中文 视频 以 2 倍速播放，时长约 2 分 45.7 秒，按顺序串联试管收纳、液体转移、瓶子重排、美工刀收纳和冰箱导航五项任务。画面同步展示当前判断、动作决策、图像参考点及左右夹爪状态，呈现任务的连续过程。</p>
+</div></div>
+<details>
+<summary><strong>视频 章节与说明</strong></summary>
+<div aria-label="能力示例展示" class="table-scroll" role="region" tabindex="0"><table>
+<thead>
+<tr>
+<th>视频 章节（2 倍速，约）</th>
+<th>任务</th>
+<th>能力重点</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><button class="chapter-button" data-seconds="0.0" type="button">00:00–00:43.1</button></td>
+<td>将两支试管放入试管架</td>
+<td>跟踪试管身份、交接与放置状态</td>
+</tr>
+<tr>
+<td><button class="chapter-button" data-seconds="43.1" type="button">00:43.1–01:15.9</button></td>
+<td>在两个容器之间转移液体</td>
+<td>协调工具与液体来源、目标容器</td>
+</tr>
+<tr>
+<td><button class="chapter-button" data-seconds="75.9" type="button">01:15.9–01:47.1</button></td>
+<td>将雪碧瓶移至桌面前方</td>
+<td>重排物品并接近目标瓶子</td>
+</tr>
+<tr>
+<td><button class="chapter-button" data-seconds="107.1" type="button">01:47.1–02:22.0</button></td>
+<td>将美工刀收入上层抽屉</td>
+<td>打开抽屉、转移工具并检查收纳状态</td>
+</tr>
+<tr>
+<td><button class="chapter-button" data-seconds="142.0" type="button">02:22.0–02:45.7</button></td>
+<td>导航至冰箱</td>
+<td>依据可见地标检查行进路线</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>画面内容：</strong> 当前判断、动作决策、图像参考点与夹爪状态随记录中的任务过程同步展示。</p>
+<p>以下两组 LIBERO 仿真对比执行相同的双物体收纳任务，采用不同的初始摆放。每组内三个模型使用相同初态、任务、相机、工具与调用预算。这些是筛选出的单次运行案例；ZDTaichu5.0-9B 完成，STEP3-VL-10B 与 Qwen3.5-9B 在所示回合未完成。</p>
+<p>下方以 2 倍速 视频 展示各模型的对比，也可打开原速 MP4 或对应 视频。</p>
+</details>
+</div></article><article class="demo-card" data-demo-index="1" id="demo-4-1"><div class="demo-card-header"><div class="demo-caption"><span class="demo-label">示例</span><h4 id="demo-4-1-heading">汤罐与奶酪入篮 · 初态 2</h4></div><div aria-label="切换示例" class="demo-pagination"><button aria-label="上一个示例" class="demo-page-prev" type="button"><span aria-hidden="true" class="demo-chevron"></span></button><span aria-live="polite" class="demo-page-count">2 / 3</span><button aria-label="下一个示例" class="demo-page-next" type="button"><span aria-hidden="true" class="demo-chevron"></span></button></div></div><div aria-labelledby="demo-4-1-heading" class="demo-card-body" role="region" tabindex="0"><span class="anchor-alias" id="simulation-demos"></span>
+<div class="case-capability"><div class="capability-heading"><span class="capability-label">展示能力</span><ul aria-label="展示能力" class="capability-tags"><li>双物体操作</li><li>工具调用</li><li>完成状态检查</li></ul></div><p>在初态 2 中依次收纳汤罐与奶酪盒，并检查松爪、退避后的放置状态。</p></div>
+<div class="demo-user-message"><p><strong>任务：</strong> 将字母汤罐和奶酪盒放入收纳篮，松开夹爪并退避。</p></div>
+<button class="sim-play" type="button">一起播放</button><div class="simulation-grid"><div class="sim-model"><h4>ZDTaichu5.0-9B</h4>
+<div class="player"><video aria-label="ZDTaichu5.0-9B 仿真演示" controls="" data-base-speed="1" loop="" muted="" playsinline="" poster="assets/simulation/soup_cheese_clean_t02_zdtaichu/cover.jpg?v=67fe6f8bd058" preload="none"><source src="assets/simulation/soup_cheese_clean_t02_zdtaichu/demo.mp4?v=6cb3b2bef40b" type="video/mp4"/><source src="assets/simulation/soup_cheese_clean_t02_zdtaichu/demo.webm?v=030402da5bda" type="video/webm"/>Your browser does not support video.</video><div class="player-foot"><label>速度 <select aria-label="速度"><option value="1">1×</option><option value="1.5">1.5×</option><option selected="" value="2">2×</option><option value="3">3×</option></select></label><a href="assets/simulation/soup_cheese_clean_t02_zdtaichu/demo.mp4?v=6cb3b2bef40b" rel="noopener" target="_blank">MP4 ↗</a></div></div>
+<p class="sim-result">完成</p><p class="sim-result">26 次调用</p></div><div class="sim-model"><h4>STEP3-VL-10B</h4>
+<div class="player"><video aria-label="STEP3-VL-10B 仿真演示" controls="" data-base-speed="1" loop="" muted="" playsinline="" poster="media/caed923423b6.jpg?v=14995ded2a60" preload="none"><source src="assets/simulation/soup_cheese_clean_t02_step3/demo.mp4?v=68e3ddfd714c" type="video/mp4"/><source src="assets/simulation/soup_cheese_clean_t02_step3/demo.webm?v=681bf929ae5f" type="video/webm"/>Your browser does not support video.</video><div class="player-foot"><label>速度 <select aria-label="速度"><option value="1">1×</option><option value="1.5">1.5×</option><option selected="" value="2">2×</option><option value="3">3×</option></select></label><a href="assets/simulation/soup_cheese_clean_t02_step3/demo.mp4?v=68e3ddfd714c" rel="noopener" target="_blank">MP4 ↗</a></div></div>
+<p class="sim-result">本回合未完成</p><p class="sim-result">40 次调用</p></div><div class="sim-model"><h4>Qwen3.5-9B</h4>
+<div class="player"><video aria-label="Qwen3.5-9B 仿真演示" controls="" data-base-speed="1" loop="" muted="" playsinline="" poster="media/84a0e0354f4f.jpg?v=ee712d65ee6e" preload="none"><source src="assets/simulation/soup_cheese_clean_t02_qwen35/demo.mp4?v=e4a76f6beaed" type="video/mp4"/><source src="assets/simulation/soup_cheese_clean_t02_qwen35/demo.webm?v=b795892257c7" type="video/webm"/>Your browser does not support video.</video><div class="player-foot"><label>速度 <select aria-label="速度"><option value="1">1×</option><option value="1.5">1.5×</option><option selected="" value="2">2×</option><option value="3">3×</option></select></label><a href="assets/simulation/soup_cheese_clean_t02_qwen35/demo.mp4?v=e4a76f6beaed" rel="noopener" target="_blank">MP4 ↗</a></div></div>
+<p class="sim-result">本回合未完成</p><p class="sim-result">40 次调用</p></div></div>
+<ul>
+<li><strong>ZDTaichu5.0-9B：</strong> 奶酪盒与汤罐均已放入篮中，松爪、退避后保持稳定。</li>
+<li><strong>STEP3-VL-10B：</strong> 奶酪盒未被抓起，汤罐未完成入篮，调用预算用尽。</li>
+<li><strong>Qwen3.5-9B：</strong> 奶酪盒已入篮，随后误选番茄酱罐；目标汤罐未被抓起，调用预算用尽。</li>
+</ul>
+</div></article><article class="demo-card" data-demo-index="2" id="demo-4-2"><div class="demo-card-header"><div class="demo-caption"><span class="demo-label">示例</span><h4 id="demo-4-2-heading">汤罐与奶酪入篮 · 初态 7</h4></div><div aria-label="切换示例" class="demo-pagination"><button aria-label="上一个示例" class="demo-page-prev" type="button"><span aria-hidden="true" class="demo-chevron"></span></button><span aria-live="polite" class="demo-page-count">3 / 3</span><button aria-label="下一个示例" class="demo-page-next" disabled="" type="button"><span aria-hidden="true" class="demo-chevron"></span></button></div></div><div aria-labelledby="demo-4-2-heading" class="demo-card-body" role="region" tabindex="0">
+<div class="case-capability"><div class="capability-heading"><span class="capability-label">展示能力</span><ul aria-label="展示能力" class="capability-tags"><li>多步骤规划</li><li>空间操作</li><li>执行状态检查</li></ul></div><p>在初态 7 中根据物体摆放安排抓取与入篮顺序，并检查执行结果。</p></div>
+<div class="demo-user-message"><p><strong>任务：</strong> 将字母汤罐和奶酪盒放入收纳篮，松开夹爪并退避。</p></div>
+<button class="sim-play" type="button">一起播放</button><div class="simulation-grid"><div class="sim-model"><h4>ZDTaichu5.0-9B</h4>
+<div class="player"><video aria-label="ZDTaichu5.0-9B 仿真演示" controls="" data-base-speed="1" loop="" muted="" playsinline="" poster="assets/simulation/soup_cheese_concise_t07_zdtaichu/cover.jpg?v=489846c26ef2" preload="none"><source src="assets/simulation/soup_cheese_concise_t07_zdtaichu/demo.mp4?v=e8832b94db61" type="video/mp4"/><source src="assets/simulation/soup_cheese_concise_t07_zdtaichu/demo.webm?v=f449578dc7a4" type="video/webm"/>Your browser does not support video.</video><div class="player-foot"><label>速度 <select aria-label="速度"><option value="1">1×</option><option value="1.5">1.5×</option><option selected="" value="2">2×</option><option value="3">3×</option></select></label><a href="assets/simulation/soup_cheese_concise_t07_zdtaichu/demo.mp4?v=e8832b94db61" rel="noopener" target="_blank">MP4 ↗</a></div></div>
+<p class="sim-result">完成</p><p class="sim-result">25 次调用</p></div><div class="sim-model"><h4>STEP3-VL-10B</h4>
+<div class="player"><video aria-label="STEP3-VL-10B 仿真演示" controls="" data-base-speed="1" loop="" muted="" playsinline="" poster="media/8e5fbcc93418.jpg?v=20a7412ab8d4" preload="none"><source src="assets/simulation/soup_cheese_concise_t07_step3/demo.mp4?v=41b7308ea832" type="video/mp4"/><source src="assets/simulation/soup_cheese_concise_t07_step3/demo.webm?v=c346780a1be4" type="video/webm"/>Your browser does not support video.</video><div class="player-foot"><label>速度 <select aria-label="速度"><option value="1">1×</option><option value="1.5">1.5×</option><option selected="" value="2">2×</option><option value="3">3×</option></select></label><a href="assets/simulation/soup_cheese_concise_t07_step3/demo.mp4?v=41b7308ea832" rel="noopener" target="_blank">MP4 ↗</a></div></div>
+<p class="sim-result">本回合未完成</p><p class="sim-result">40 次调用</p></div><div class="sim-model"><h4>Qwen3.5-9B</h4>
+<div class="player"><video aria-label="Qwen3.5-9B 仿真演示" controls="" data-base-speed="1" loop="" muted="" playsinline="" poster="media/8725f1e2edba.jpg?v=206c0818c88e" preload="none"><source src="assets/simulation/soup_cheese_concise_t07_qwen35/demo.mp4?v=674063a613d5" type="video/mp4"/><source src="assets/simulation/soup_cheese_concise_t07_qwen35/demo.webm?v=306d4ed04f6c" type="video/webm"/>Your browser does not support video.</video><div class="player-foot"><label>速度 <select aria-label="速度"><option value="1">1×</option><option value="1.5">1.5×</option><option selected="" value="2">2×</option><option value="3">3×</option></select></label><a href="assets/simulation/soup_cheese_concise_t07_qwen35/demo.mp4?v=674063a613d5" rel="noopener" target="_blank">MP4 ↗</a></div></div>
+<p class="sim-result">本回合未完成</p><p class="sim-result">20 次调用</p></div></div>
+<ul>
+<li><strong>ZDTaichu5.0-9B：</strong> 奶酪盒与汤罐均已放入篮中，夹爪松开并向上退避，完成双物体收纳。</li>
+<li><strong>STEP3-VL-10B：</strong> 奶酪盒已入篮，汤罐未被有效夹持，仍留在桌面，调用预算用尽。</li>
+<li><strong>Qwen3.5-9B：</strong> 奶酪盒已入篮，汤罐未被抓起；连续四次相同工具和参数后结束回合。</li>
+</ul>
+</div></article></div></section></section><section class="article-section" id="training"><h2>训练<a aria-label="训练" href="#training">#</a></h2>
+<p></p>
+<h3 id="training-1">训练方案</h3>
+<p>ZDTaichu5.0-9B 采用分阶段 BF16 混合精度训练方案：</p>
+<ol>
+<li><strong>8K 视觉语言预训练：</strong> 建立广泛的感知与语言对齐。</li>
+<li><strong>16K 持续预训练：</strong> 引入更丰富、结构化程度更高的多模态数据。</li>
+<li><strong>32K 监督微调：</strong> 学习复杂多模态指令与逐步推理。</li>
+<li><strong>上下文扩展至 128K：</strong> 支持长文档与长视频。</li>
+<li><strong>128K 高质量退火训练：</strong> 使用精选指令数据和面向目标能力的数据。</li>
+<li><strong>基于可验证奖励的强化学习：</strong> 采用基于 GRPO 的目标函数，奖励信号包括答案正确性、空间定位准确性及输出格式检查，并过滤过于简单或无法求解的提示。</li>
+</ol>
+<p></p>
+<h3 id="training-2">分阶段训练数据</h3>
+<p>五个阶段的数据总量约为 1.28T tokens：</p>
+<div aria-label="训练" class="table-scroll" role="region" tabindex="0"><table>
+<thead>
+<tr>
+<th>阶段</th>
+<th style="text-align:right">Token 数量</th>
+<th>重点内容</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>阶段 1</td>
+<td style="text-align:right">364B</td>
+<td>双语图文数据、富含 OCR 的语料、短视频描述</td>
+</tr>
+<tr>
+<td>阶段 2</td>
+<td style="text-align:right">737B</td>
+<td>文档、PDF/OCR、中文长尾视觉数据、图像描述及视频</td>
+</tr>
+<tr>
+<td>阶段 3</td>
+<td style="text-align:right">136B</td>
+<td>图像推理、视频问答、空间与物理感知任务、CAD 类问题</td>
+</tr>
+<tr>
+<td>阶段 4</td>
+<td style="text-align:right">28B</td>
+<td>长视频及高难度专家指令数据</td>
+</tr>
+<tr>
+<td>阶段 5</td>
+<td style="text-align:right">10B</td>
+<td>经筛选、采样及合成的空间、OCR 和结构化视觉任务</td>
+</tr>
+</tbody>
+</table></div>
+<p></p>
+</section><section class="article-section" id="acknowledgements"><h2>致谢<a aria-label="致谢" href="#acknowledgements">#</a></h2>
+<p>本模型基于 Qwen3.5 语言架构与 NVIDIA C-RADIO 视觉编码器系列构建。除最终模型许可证外，请同时引用上游项目并遵守其许可证。</p>
+<p></p>
+</section><section class="article-section" id="citation"><h2>引用<a aria-label="引用" href="#citation">#</a></h2>
+<p>请使用以下项目级引用。</p>
+<pre><code class="language-bibtex">@misc{zdtaichu_5_0_9b,
+  title  = {ZDTaichu5.0-9B: A Multimodal Foundation Model for Visual and Spatial Reasoning, Agents, and Embodied AI},
+  author = {{ZDTaichu5.0-9B Contributors}},
+  year   = {2026},
+  note   = {Open-weight model and open inference implementation}
+}
+</code></pre>
+</section></main><footer class="site-footer"><div><p class="footer-brand">ZDTaichu5.0-9B</p><p>通用视觉 · 空间推理 · 具身智能 · Agent</p></div></footer></div>
+<dialog aria-label="能力全景" class="image-dialog"><div class="dialog-toolbar"><a class="dialog-download" download="">下载 ↗</a><button type="button">关闭 ×</button></div><img alt="" class="dialog-image"/></dialog><div aria-live="polite" class="toast" hidden="" role="status"></div></body></html>

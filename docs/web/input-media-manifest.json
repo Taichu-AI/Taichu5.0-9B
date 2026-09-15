@@ -1,0 +1,20 @@
+{
+  "original_videos": [
+    {
+      "source_url": "https://huggingface.co/datasets/nyu-visionx/VSI-Bench/resolve/main/arkitscenes.zip",
+      "archive_size": 1812227830,
+      "member": "arkitscenes/47429977.mp4",
+      "video_size": 5498009,
+      "video_sha256": "2776ad9d9b838db2539031323ecce83674979e7322acd786a0ba779af79725ce",
+      "crc32": "0x7099cfb3",
+      "downloaded_bytes": 5505081,
+      "case_id": "demo-case-15",
+      "path": "assets/demos/comparisons/case-15/47429977.mp4",
+      "poster": "assets/demos/comparisons/case-15/video-poster.jpg",
+      "default_speed": 1,
+      "media_duration": 43.633333,
+      "webm": "assets/demos/comparisons/case-15/47429977.webm",
+      "webm_sha256": "49966f2fd00967f861279afafce4656e0ed164491378f0fb07fa61c3a3c63d94"
+    }
+  ]
+}
